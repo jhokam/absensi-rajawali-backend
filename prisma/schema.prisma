@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum Jenjang {
+  PAUD
+  CABERAWIT
+  PRA_REMAJA
+  REMAJA
+  PRA_NIKAH
+}
+
+enum PendidikanTerakhir {
+  PAUD
+  TK
+  SD
+  SMP
+  SMA_SMK
+  D1_D3
+  S1_D4
+  S2
+  S3
+}
+
+model Remaja {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  nama String
+  jenis_kelamin JenisKelamin
+  tempat_lahir String?
+  tanggal_lahir DateTime
+  jenjang Jenjang
+  nomer_whatsapp Int
+  pendidikan_terakhir PendidikanTerakhir?
+  nama_orang_tua String?
+  nomer_whatsapp_orang_tua Int?
+  sambung Boolean
+  alamat_tempat_tinggal String?
+  keterangan Boolean
+  alamat_asal String?
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  username String @unique
+  password String
+  role Role
+}
