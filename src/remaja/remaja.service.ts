@@ -54,4 +54,14 @@ export class RemajaService {
 		});
 		return deleteUser;
 	}
+
+	async findById(id: string): Promise<Remaja | null> {
+		this.logger.log("findByID");
+		const searchRemaja = await this.prisma.remaja.findUnique({
+			where: {
+				id: id,
+			},
+		});
+		return searchRemaja;
+	}
 }

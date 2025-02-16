@@ -6,6 +6,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 } from "@nestjs/common";
 import type { Remaja } from "@prisma/client";
 import { RemajaService } from "./remaja.service";
@@ -19,9 +20,13 @@ export class RemajaController {
 	}
 
 	@Get()
-	async getRemaja() {
-		const users = await this.remajaService.getAllUsers();
-		return { users };
+	async getRemaja(@Query() query: { id: string }) {
+		if (query.id) {
+			return await this.remajaService.remaja({
+				id: query.id,
+			});
+		}
+		return await this.remajaService.getAllUsers();
 	}
 
 	@Get("/:id")
