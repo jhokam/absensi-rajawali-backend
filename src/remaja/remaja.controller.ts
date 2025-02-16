@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+} from "@nestjs/common";
 import type { Remaja } from "@prisma/client";
 import { RemajaService } from "./remaja.service";
 
@@ -26,5 +34,22 @@ export class RemajaController {
 	@Post()
 	async createRemaja(@Body() data: Remaja) {
 		return await this.remajaService.createUser(data);
+	}
+
+	@Delete("/:id")
+	async deleteRemaja(@Param("id") id: string) {
+		return await this.remajaService.deleteUser({
+			id: id,
+		});
+	}
+
+	@Patch("/:id")
+	async updateRemaja(@Param("id") id: string, @Body() data: Remaja) {
+		return await this.remajaService.updateUser({
+			where: {
+				id: id,
+			},
+			data: data,
+		});
 	}
 }
