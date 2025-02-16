@@ -1,4 +1,4 @@
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
 	message: string;
 	success: boolean;
 	errors: string[] | null;
