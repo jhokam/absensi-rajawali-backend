@@ -1,10 +1,13 @@
 import { Controller, Get, Param } from "@nestjs/common";
-import { Request } from "express";
 import { RemajaService } from "./remaja.service";
 
 @Controller("/remaja")
 export class RemajaController {
-	constructor(private readonly remajaService: RemajaService) {}
+	private readonly remajaService: RemajaService;
+
+	constructor(remajaService: RemajaService) {
+		this.remajaService = remajaService
+	}
 
 	@Get()
 	async getRemaja() {

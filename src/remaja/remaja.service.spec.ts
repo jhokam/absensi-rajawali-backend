@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RemajaService } from './remaja.service';
+import { Test, type TestingModule } from "@nestjs/testing";
+import { RemajaService } from "./remaja.service";
 
-describe('RemajaService', () => {
-  let service: RemajaService;
+describe("RemajaService", () => {
+	let service: RemajaService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [RemajaService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [RemajaService],
+		}).compile();
 
-    service = module.get<RemajaService>(RemajaService);
-  });
+		service = module.get<RemajaService>(RemajaService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it("should be defined", () => {
+		expect(service).toBeDefined();
+	});
 });

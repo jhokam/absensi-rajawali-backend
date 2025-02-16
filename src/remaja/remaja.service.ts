@@ -1,10 +1,14 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Prisma, Remaja } from "@prisma/client";
+import type { Prisma, Remaja } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class RemajaService {
-	constructor(private readonly prisma: PrismaService) {}
+	private readonly prisma: PrismaService;
+
+	constructor(prisma: PrismaService) {
+		this.prisma = prisma;
+	}
 	private logger = new Logger("RemajaService");
 
 	async remaja(
