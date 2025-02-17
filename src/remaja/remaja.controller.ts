@@ -3,14 +3,18 @@ import {
 	Controller,
 	Delete,
 	Get,
+	NotFoundException,
 	Param,
 	Patch,
 	Post,
 	Query,
+	UseGuards,
 } from "@nestjs/common";
 import type { Remaja } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
 import { RemajaService } from "./remaja.service";
 
+// @UseGuards(AuthGuard)
 @Controller("/remaja")
 export class RemajaController {
 	private readonly remajaService: RemajaService;
@@ -22,9 +26,19 @@ export class RemajaController {
 	@Get()
 	async getRemaja(@Query() query: { id: string }) {
 		if (query.id) {
-			return await this.remajaService.remaja({
-				id: query.id,
-			});
+			const allRemaja = await this.remajaService.getAllUsers();
+			const searchTerm = query.id.toLowerCase();
+			const remaja = allRemaja.find((remaja) =>
+				remaja.id.toLowerCase().includes(searchTerm),
+			);
+
+			if (!remaja) {
+				throw new NotFoundException(
+					`Remaja with id containing ${query.id} not found`,
+				);
+			}
+
+			return remaja;
 		}
 		return await this.remajaService.getAllUsers();
 	}
