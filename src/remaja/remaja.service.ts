@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import type { Prisma, Remaja } from "@prisma/client";
+import { hash } from "argon2";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -29,8 +30,12 @@ export class RemajaService {
 
 	async createUser(data: Prisma.RemajaCreateInput): Promise<Remaja> {
 		this.logger.log("createUser");
+		const hashedPassword = await hash(data.password);
 		const createUser = await this.prisma.remaja.create({
-			data,
+			data: {
+				...data,
+				password: hashedPassword,
+			},
 		});
 		return createUser;
 	}
@@ -55,7 +60,7 @@ export class RemajaService {
 		return deleteUser;
 	}
 
-	async findById(id: string): Promise<Remaja | null> {
+	async findById(id: number): Promise<Remaja | null> {
 		this.logger.log("findByID");
 		const searchRemaja = await this.prisma.remaja.findUnique({
 			where: {

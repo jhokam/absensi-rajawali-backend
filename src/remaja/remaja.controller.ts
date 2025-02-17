@@ -11,10 +11,11 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import type { Remaja } from "@prisma/client";
+import * as argon2 from "argon2";
 import { AuthGuard } from "src/auth/auth.guard";
 import { RemajaService } from "./remaja.service";
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller("/remaja")
 export class RemajaController {
 	private readonly remajaService: RemajaService;
@@ -24,13 +25,10 @@ export class RemajaController {
 	}
 
 	@Get()
-	async getRemaja(@Query() query: { id: string }) {
+	async getRemaja(@Query() query: { id: number }) {
 		if (query.id) {
 			const allRemaja = await this.remajaService.getAllUsers();
-			const searchTerm = query.id.toLowerCase();
-			const remaja = allRemaja.find((remaja) =>
-				remaja.id.toLowerCase().includes(searchTerm),
-			);
+			const remaja = allRemaja.find((remaja) => remaja.id);
 
 			if (!remaja) {
 				throw new NotFoundException(
@@ -44,7 +42,7 @@ export class RemajaController {
 	}
 
 	@Get("/:id")
-	async getRemajaById(@Param("id") id: string) {
+	async getRemajaById(@Param("id") id: number) {
 		return await this.remajaService.remaja({
 			id: id,
 		});
@@ -56,14 +54,14 @@ export class RemajaController {
 	}
 
 	@Delete("/:id")
-	async deleteRemaja(@Param("id") id: string) {
+	async deleteRemaja(@Param("id") id: number) {
 		return await this.remajaService.deleteUser({
 			id: id,
 		});
 	}
 
 	@Patch("/:id")
-	async updateRemaja(@Param("id") id: string, @Body() data: Remaja) {
+	async updateRemaja(@Param("id") id: number, @Body() data: Remaja) {
 		return await this.remajaService.updateUser({
 			where: {
 				id: id,

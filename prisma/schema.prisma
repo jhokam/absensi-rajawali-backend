@@ -26,47 +26,21 @@ enum Jenjang {
   PRA_NIKAH
 }
 
-enum PendidikanTerakhir {
-  PAUD
-  TK
-  SD
-  SMP
-  SMA_SMK
-  D1_D3
-  S1_D4
-  S2
-  S3
-}
-
-model Remaja {
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  nama String
-  jenis_kelamin JenisKelamin
-  tempat_lahir String?
-  tanggal_lahir DateTime
-  jenjang Jenjang
-  nomer_whatsapp Int
-  pendidikan_terakhir PendidikanTerakhir?
-  nama_orang_tua String?
-  nomer_whatsapp_orang_tua Int?
-  sambung Boolean
-  alamat_tempat_tinggal String?
-  keterangan Boolean
-  alamat_asal String?
-}
-
 enum Role {
   ADMIN
   USER
 }
 
-model User {
+model Remaja {
   id Int @id @default(autoincrement())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  nama String
   username String @unique
-  password String
+  jenis_kelamin JenisKelamin
+  jenjang Jenjang
+  alamat String
+  sambung Boolean
   role Role
+  password String
 }
