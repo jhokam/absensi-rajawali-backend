@@ -12,6 +12,16 @@ export class RemajaService {
 	}
 	private logger = new Logger("RemajaService");
 
+	async getUserById(id: number): Promise<Remaja | null> {
+		this.logger.log("getUserById");
+		const user = await this.prisma.remaja.findUnique({
+			where: {
+				id: id,
+			},
+		});
+		return user;
+	}
+
 	async remaja(
 		remajaWhereUniqueInput: Prisma.RemajaWhereUniqueInput,
 	): Promise<Remaja | null> {
@@ -24,8 +34,28 @@ export class RemajaService {
 
 	async getAllUsers() {
 		this.logger.log("getAllUsers");
-		const users = await this.prisma.remaja.findMany();
-		return users;
+		const users = await this.prisma.remaja.findMany({
+			select: {
+				id: true,
+				nama: true,
+				alamat: true,
+				jenis_kelamin: true,
+				jenjang: true,
+				role: true,
+				sambung: true,
+				username: true,
+			},
+		});
+		return users.map((user) => ({
+			id: user.id,
+			nama: user.nama,
+			alamat: user.alamat,
+			jenis_kelamin: user.jenis_kelamin,
+			jenjang: user.jenjang,
+			role: user.role,
+			sambung: user.sambung,
+			username: user.username,
+		}));
 	}
 
 	async createUser(data: Prisma.RemajaCreateInput): Promise<Remaja> {
