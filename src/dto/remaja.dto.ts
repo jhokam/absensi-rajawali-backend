@@ -1,28 +1,32 @@
 import { JenisKelamin, Jenjang, Role, Sambung } from "@prisma/client";
-import { IsEnum, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
 export class RemajaDto {
-	// @IsString()
+	@IsString()
+	@IsNotEmpty()
 	nama: string;
 
-	// @IsString()
+	@IsString()
+	@IsNotEmpty()
 	username: string;
 
-	// @IsEnum(JenisKelamin)
+	@IsEnum(JenisKelamin)
+	@IsNotEmpty()
 	jenis_kelamin: JenisKelamin;
 
-	// @IsEnum(Jenjang)
+	@IsEnum(Jenjang)
+	@IsNotEmpty()
 	jenjang: Jenjang;
 
-	// @IsString()
+	@IsString()
+	@IsNotEmpty()
 	alamat: string;
 
-	// @IsEnum(Sambung)
+	@IsEnum(Sambung)
+	@IsNotEmpty()
 	sambung: Sambung;
 
-	// @IsEnum(Role)
+	@IsEnum(Role)
+	@IsNotEmpty()
 	role: Role;
-
-	// @IsString()
-	password: string;
 }
