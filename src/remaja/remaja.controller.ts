@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -10,13 +11,15 @@ import {
 	Query,
 	UseGuards,
 } from "@nestjs/common";
-import type { Remaja } from "@prisma/client";
-import * as argon2 from "argon2";
+import { type Remaja, Role } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
+import type { RemajaDto } from "src/dto/remaja.dto";
+import { Roles } from "src/roles/roles.decorator";
+import { RolesGuard } from "src/roles/roles.guard";
 import { RemajaService } from "./remaja.service";
 
-@UseGuards(AuthGuard)
 @Controller("/remaja")
+@UseGuards(AuthGuard, RolesGuard)
 export class RemajaController {
 	private readonly remajaService: RemajaService;
 
@@ -25,46 +28,59 @@ export class RemajaController {
 	}
 
 	@Get()
-	async getRemaja(@Query() query: { id: number }) {
-		if (query.id) {
-			const allRemaja = await this.remajaService.getAllUsers();
-			const remaja = allRemaja.find((remaja) => remaja.id);
-
-			if (!remaja) {
-				throw new NotFoundException(
-					`Remaja with id containing ${query.id} not found`,
-				);
-			}
-
-			return remaja;
-		}
+	async getAllRemaja(): Promise<RemajaDto[]> {
 		return await this.remajaService.getAllUsers();
 	}
 
 	@Get("/:id")
-	async getRemajaById(@Param("id") id: number) {
-		return await this.remajaService.remaja({
-			id: id,
+	async getRemajaById(@Param("id") id: string): Promise<RemajaDto> {
+		const numericId = Number(id);
+
+		if (Number.isNaN(numericId)) {
+			throw new BadRequestException("Invalid ID provided.");
+		}
+
+		const remaja = await this.remajaService.remaja({
+			id: numericId,
 		});
+
+		if (!remaja) {
+			throw new NotFoundException(`Remaja with id ${numericId} not found`);
+		}
+
+		return remaja;
 	}
 
 	@Post()
+	@Roles(Role.User)
 	async createRemaja(@Body() data: Remaja) {
 		return await this.remajaService.createUser(data);
 	}
 
 	@Delete("/:id")
-	async deleteRemaja(@Param("id") id: number) {
+	@Roles(Role.User)
+	async deleteRemaja(@Param("id") id: string) {
+		const numericId = Number(id);
+
+		if (Number.isNaN(numericId)) {
+			throw new BadRequestException("Invalid ID provided.");
+		}
 		return await this.remajaService.deleteUser({
-			id: id,
+			id: numericId,
 		});
 	}
 
 	@Patch("/:id")
-	async updateRemaja(@Param("id") id: number, @Body() data: Remaja) {
+	@Roles(Role.User)
+	async updateRemaja(@Param("id") id: string, @Body() data: Remaja) {
+		const numericId = Number(id);
+
+		if (Number.isNaN(numericId)) {
+			throw new BadRequestException("Invalid ID provided.");
+		}
 		return await this.remajaService.updateUser({
 			where: {
-				id: id,
+				id: numericId,
 			},
 			data: data,
 		});

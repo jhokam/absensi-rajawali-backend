@@ -4,7 +4,6 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from "@nestjs/common";
-// biome-ignore lint/style/useImportType: if this code use type it will be a error
 import { JwtService } from "@nestjs/jwt";
 import type { Request } from "express";
 import { jwtConstants } from "./constants";

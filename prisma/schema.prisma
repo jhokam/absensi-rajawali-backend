@@ -14,21 +14,26 @@ datasource db {
 }
 
 enum JenisKelamin {
-  LAKI_LAKI
-  PEREMPUAN
+  Laki_Laki
+  Perempuan
 }
 
 enum Jenjang {
-  PAUD
-  CABERAWIT
-  PRA_REMAJA
-  REMAJA
-  PRA_NIKAH
+  Paud
+  Caberawit
+  Pra_Remaja
+  Remaja
+  Pra_Nikah
 }
 
 enum Role {
-  ADMIN
-  USER
+  Admin
+  User
+}
+
+enum Sambung {
+  Aktif
+  Tidak_Aktif
 }
 
 model Remaja {
@@ -40,7 +45,7 @@ model Remaja {
   jenis_kelamin JenisKelamin
   jenjang Jenjang
   alamat String
-  sambung Boolean
+  sambung Sambung
   role Role
   password String
 }

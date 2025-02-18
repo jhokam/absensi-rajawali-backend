@@ -1,8 +1,8 @@
 export type Remaja = {
 	// id
 	nama: string;
-	jenis_kelamin: "Laki-laki" | "Perempuan";
-	jenjang: "PAUD" | "CABERAWIT" | "PRA_REMAJA" | "REMAJA" | "PRA_NIKAH";
+	jenis_kelamin: "Laki-Laki" | "Perempuan";
+	jenjang: "Paud" | "Caberawit" | "Pra_Remaja" | "Remaja" | "Pra_Nikah";
 	alamat: string;
-	sambung: boolean;
+	sambung: "Aktif" | "Tidak_Aktif";
 };
