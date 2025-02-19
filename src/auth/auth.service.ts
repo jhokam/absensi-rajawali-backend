@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { verify } from "argon2";
 import { UsersService } from "../users/users.service";
@@ -17,21 +21,30 @@ export class AuthService {
 		username: string,
 		pass: string,
 	): Promise<{ access_token: string }> {
-		const user = await this.usersService.findOne(username);
+		try {
+			const user = await this.usersService.findOne(username);
 
-		if (!user) {
-			throw new UnauthorizedException("Invalid user");
+			if (!user) {
+				throw new NotFoundException("User not found");
+			}
+
+			const isPasswordValid = await verify(user.password, pass);
+
+			if (!isPasswordValid) {
+				throw new UnauthorizedException("Incorrect password"); // This will set status to 401
+			}
+
+			const payload = {
+				sub: user.id,
+				username: user.username,
+				role: user.role,
+			};
+			return {
+				access_token: await this.jwtService.signAsync(payload),
+			};
+		} catch (error) {
+			console.error("Error during sign-in:", error);
+			throw error;
 		}
-
-		const isPasswordValid = await verify(user.password, pass);
-
-		if (!isPasswordValid) {
-			throw new UnauthorizedException("Invalid credentials");
-		}
-
-		const payload = { sub: user.id, username: user.username };
-		return {
-			access_token: await this.jwtService.signAsync(payload),
-		};
 	}
 }
