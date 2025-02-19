@@ -21,6 +21,7 @@
 		"@nestjs/common": "^11.0.8",
 		"@nestjs/core": "^11.0.8",
 		"@nestjs/platform-express": "^11.0.8",
+		"@nestjs/swagger": "^11.0.3",
 		"@prisma/client": "^6.3.1",
 		"argon2": "^0.41.1",
 		"class-transformer": "^0.5.1",

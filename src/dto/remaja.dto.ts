@@ -29,4 +29,8 @@ export class RemajaDto {
 	@IsEnum(Role)
 	@IsNotEmpty()
 	role: Role;
+
+	@IsString()
+	@IsNotEmpty()
+	password: string;
 }

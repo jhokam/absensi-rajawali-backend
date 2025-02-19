@@ -10,6 +10,7 @@ import {
 	Post,
 	UseGuards,
 } from "@nestjs/common";
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { type Remaja, Role } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 import { Roles } from "src/roles/roles.decorator";
@@ -26,7 +27,10 @@ export class RemajaController {
 	}
 
 	@Get()
-	@Roles(Role.Admin)
+	@ApiResponse({
+		status: 200,
+		description: "Successfully retrieved all Remaja data",
+	})
 	async getAllRemaja() {
 		const data = await this.remajaService.getAllUsers();
 		return {
@@ -36,6 +40,14 @@ export class RemajaController {
 	}
 
 	@Get("/:id")
+	@ApiResponse({
+		status: 200,
+		description: "Successfully retrieved 1 Remaja data",
+	})
+	@ApiResponse({
+		status: 404,
+		description: "Remaja with id ${id} not found",
+	})
 	async getRemajaById(@Param("id") id: string) {
 		const numericId = Number(id);
 
@@ -58,7 +70,50 @@ export class RemajaController {
 	}
 
 	@Post()
-	@Roles(Role.Admin)
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				nama: {
+					type: "string",
+					example: "John Doe",
+				},
+				username: {
+					type: "string",
+					example: "johndoe",
+				},
+				jenis_kelamin: {
+					type: "string",
+					example: "Laki-Laki",
+				},
+				jenjang: {
+					type: "string",
+					example: "Remaja",
+				},
+				alamat: {
+					type: "string",
+					example: "Jl. Kenangan No. 1",
+				},
+				sambung: {
+					type: "string",
+					example: "Aktif",
+				},
+				role: {
+					type: "string",
+					example: "User",
+				},
+				password: {
+					type: "string",
+					example: "password",
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 200,
+		description: "Successfully created a new Remaja",
+	})
+	// @Roles(Role.Admin)
 	async createRemaja(@Body() data: Remaja) {
 		const createData = await this.remajaService.createUser(data);
 		return {
@@ -68,7 +123,11 @@ export class RemajaController {
 	}
 
 	@Delete("/:id")
-	@Roles(Role.Admin)
+	@ApiResponse({
+		status: 200,
+		description: "Successfully deleted a Remaja",
+	})
+	// @Roles(Role.Admin)
 	async deleteRemaja(@Param("id") id: string) {
 		const numericId = Number(id);
 
@@ -86,7 +145,77 @@ export class RemajaController {
 	}
 
 	@Patch("/:id")
-	@Roles(Role.Admin)
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				nama: {
+					type: "string",
+					example: "Jane Doe",
+				},
+				username: {
+					type: "string",
+					example: "janedoe",
+				},
+				jenis_kelamin: {
+					type: "string",
+					example: "Perempuan",
+				},
+				jenjang: {
+					type: "string",
+					example: "Pra_Nikah",
+				},
+				alamat: {
+					type: "string",
+					example: "Jl. in aja dulu No. 1",
+				},
+				sambung: {
+					type: "string",
+					example: "Tidak_Aktif",
+				},
+				role: {
+					type: "string",
+					example: "Admin",
+				},
+				password: {
+					type: "string",
+					example: "password",
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 200,
+		description: "Successfully updated a Remaja",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+				},
+				message: {
+					type: "string",
+					example: "Successfully updated a Remaja",
+				},
+				error: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				data: {
+					type: "object",
+					properties: {
+						id: {
+							type: "integer",
+							example: 1,
+						},
+					},
+				},
+			},
+		},
+	})
+	// @Roles(Role.Admin)
 	async updateRemaja(@Param("id") id: string, @Body() data: Remaja) {
 		const numericId = Number(id);
 
