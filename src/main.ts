@@ -1,6 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { HttpExceptionFilter } from "./http-exception.filter";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
 
 	app.setGlobalPrefix("api");
 	app.enableCors();
+	app.useGlobalFilters(new HttpExceptionFilter());
 	await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

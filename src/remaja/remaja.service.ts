@@ -55,16 +55,21 @@ export class RemajaService {
 
 	// Post
 	async createUser(data: Prisma.RemajaCreateInput): Promise<Partial<Remaja>> {
-		this.logger.log("createUser");
-		const hashedPassword = await hash(data.password);
-		const createUser = await this.prisma.remaja.create({
-			data: {
-				...data,
-				password: hashedPassword,
-			},
-			select: this.getRemajaSelect(),
-		});
-		return createUser;
+		try {
+			this.logger.log("createUser");
+			const hashedPassword = await hash(data.password);
+			const createUser = await this.prisma.remaja.create({
+				data: {
+					...data,
+					password: hashedPassword,
+				},
+				select: this.getRemajaSelect(),
+			});
+			return createUser;
+		} catch (error) {
+			this.logger.error(`Error creating user: ${error.message}`, error.stack);
+			throw new Error("Failed to create user.");
+		}
 	}
 
 	// Patch
@@ -89,12 +94,17 @@ export class RemajaService {
 	async deleteUser(
 		where: Prisma.RemajaWhereUniqueInput,
 	): Promise<Partial<Remaja>> {
-		this.logger.log("deleteUser");
-		const deleteUser = await this.prisma.remaja.delete({
-			where,
-			select: this.getRemajaSelect(),
-		});
-		return deleteUser;
+		try {
+			this.logger.log("deleteUser");
+			const deleteUser = await this.prisma.remaja.delete({
+				where,
+				select: this.getRemajaSelect(),
+			});
+			return deleteUser;
+		} catch (error) {
+			this.logger.error(`Error deleting user: ${error.message}`, error.stack);
+			throw new Error("Failed to delete user.");
+		}
 	}
 
 	async findById(id: number): Promise<Partial<Remaja> | null> {

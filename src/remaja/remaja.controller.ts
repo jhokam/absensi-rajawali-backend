@@ -4,7 +4,6 @@ import {
 	Controller,
 	Delete,
 	Get,
-	InternalServerErrorException,
 	NotFoundException,
 	Param,
 	Patch,
@@ -131,7 +130,7 @@ export class RemajaController {
 		} catch (error: any) {
 			console.error("Error retrieving Remaja:", error);
 
-			return formatErrorResponse("An unexpected error occurred.", error);
+			throw error;
 		}
 	}
 
@@ -202,21 +201,15 @@ export class RemajaController {
 	async getRemajaById(@Param("id") id: string): Promise<any> {
 		const numericId = Number(id);
 
-		if (isNaN(numericId)) {
-			return formatErrorResponse(
-				"Invalid ID provided.",
-				new BadRequestException("Invalid ID provided."),
-			);
+		if (Number.isNaN(numericId)) {
+			throw new BadRequestException("Invalid ID provided.");
 		}
 
 		try {
 			const remaja = await this.remajaService.getUserById(numericId);
 
 			if (!remaja) {
-				return formatErrorResponse(
-					`Remaja with ID ${numericId} not found.`,
-					new NotFoundException(`Remaja with ID ${numericId} not found.`),
-				);
+				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
 
 			return formatResponse(
@@ -227,7 +220,7 @@ export class RemajaController {
 			);
 		} catch (error: any) {
 			console.error("Error retrieving Remaja:", error);
-			return formatErrorResponse("An unexpected error occurred.", error);
+			throw error;
 		}
 	}
 
@@ -349,10 +342,7 @@ export class RemajaController {
 			console.error("Error creating Remaja:", error);
 
 			// Generic error handling for unexpected errors
-			return formatErrorResponse(
-				"Failed to create Remaja. Please try again later.",
-				new InternalServerErrorException("Failed to create Remaja."),
-			);
+			throw error;
 		}
 	}
 
@@ -432,10 +422,7 @@ export class RemajaController {
 			});
 
 			if (!deletedRemaja) {
-				return formatErrorResponse(
-					`Remaja with ID ${numericId} not found.`,
-					new NotFoundException(`Remaja with ID ${numericId} not found.`),
-				);
+				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
 
 			return formatResponse(
@@ -457,10 +444,7 @@ export class RemajaController {
 			console.error("Error deleting Remaja:", error);
 
 			// Generic error handling for unexpected errors
-			return formatErrorResponse(
-				"Failed to delete Remaja. Please try again later.",
-				new InternalServerErrorException("Failed to delete Remaja."),
-			);
+			throw error;
 		}
 	}
 
@@ -608,10 +592,7 @@ export class RemajaController {
 			console.error("Error updating Remaja:", error);
 
 			// Generic error handling for unexpected errors
-			return formatErrorResponse(
-				"Failed to update Remaja. Please try again later.",
-				new InternalServerErrorException("Failed to update Remaja."),
-			);
+			throw error;
 		}
 	}
 }

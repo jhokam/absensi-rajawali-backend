@@ -1,8 +1,4 @@
-import {
-	Injectable,
-	NotFoundException,
-	UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { verify } from "argon2";
 import { UsersService } from "../users/users.service";
@@ -25,13 +21,13 @@ export class AuthService {
 			const user = await this.usersService.findOne(username);
 
 			if (!user) {
-				throw new NotFoundException("User not found");
+				throw new UnauthorizedException("Invalid credentials");
 			}
 
 			const isPasswordValid = await verify(user.password, pass);
 
 			if (!isPasswordValid) {
-				throw new UnauthorizedException("Incorrect password"); // This will set status to 401
+				throw new UnauthorizedException("Invalid credentials");
 			}
 
 			const payload = {
