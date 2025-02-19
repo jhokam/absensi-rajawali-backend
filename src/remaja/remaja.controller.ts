@@ -10,10 +10,13 @@ import {
 	Post,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { type Remaja, Role } from "@prisma/client";
+import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import type { Remaja } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
-import { Roles } from "src/roles/roles.decorator";
+import {
+	formatErrorResponse,
+	formatResponse,
+} from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
 import { RemajaService } from "./remaja.service";
 
@@ -32,11 +35,17 @@ export class RemajaController {
 		description: "Successfully retrieved all Remaja data",
 	})
 	async getAllRemaja() {
-		const data = await this.remajaService.getAllUsers();
-		return {
-			data: data,
-			message: "Successfully retrieved all Remaja data",
-		};
+		try {
+			const data = await this.remajaService.getAllUsers();
+			return formatResponse(
+				data,
+				"Successfully retrieved all Remaja data",
+				true,
+				null,
+			);
+		} catch (error) {
+			return formatErrorResponse("An unexpected error occurred.", error);
+		}
 	}
 
 	@Get("/:id")
@@ -52,21 +61,33 @@ export class RemajaController {
 		const numericId = Number(id);
 
 		if (Number.isNaN(numericId)) {
-			throw new BadRequestException("Invalid ID provided.");
+			return formatErrorResponse(
+				"Invalid ID provided.",
+				new BadRequestException("Invalid ID provided."),
+			);
 		}
 
-		const remaja = await this.remajaService.remaja({
-			id: numericId,
-		});
+		try {
+			const remaja = await this.remajaService.remaja({
+				id: numericId,
+			});
 
-		if (!remaja) {
-			throw new NotFoundException(`Remaja with id ${numericId} not found`);
+			if (!remaja) {
+				return formatErrorResponse(
+					`Remaja with ID ${numericId} not found.`,
+					new NotFoundException(`Remaja with ID ${numericId} not found.`),
+				);
+			}
+
+			return formatResponse(
+				remaja,
+				"Successfully retrieved 1 Remaja data",
+				true,
+				null,
+			);
+		} catch (error: any) {
+			return formatErrorResponse("An unexpected error occurred.", error);
 		}
-
-		return {
-			data: remaja,
-			message: "Successfully retrieved 1 Remaja data",
-		};
 	}
 
 	@Post()
@@ -113,13 +134,18 @@ export class RemajaController {
 		status: 200,
 		description: "Successfully created a new Remaja",
 	})
-	// @Roles(Role.Admin)
 	async createRemaja(@Body() data: Remaja) {
-		const createData = await this.remajaService.createUser(data);
-		return {
-			data: createData,
-			message: "Successfully created a new Remaja",
-		};
+		try {
+			const createData = await this.remajaService.createUser(data);
+			return formatResponse(
+				createData,
+				"Successfully created a new Remaja",
+				true,
+				null,
+			);
+		} catch (error: any) {
+			return formatErrorResponse(error.message, error);
+		}
 	}
 
 	@Delete("/:id")
@@ -127,21 +153,26 @@ export class RemajaController {
 		status: 200,
 		description: "Successfully deleted a Remaja",
 	})
-	// @Roles(Role.Admin)
 	async deleteRemaja(@Param("id") id: string) {
-		const numericId = Number(id);
+		try {
+			const numericId = Number(id);
 
-		if (Number.isNaN(numericId)) {
-			throw new BadRequestException("Invalid ID provided.");
+			if (Number.isNaN(numericId)) {
+				throw new BadRequestException("Invalid ID provided.");
+			}
+			const deleteData = await this.remajaService.deleteUser({
+				id: numericId,
+			});
+
+			return formatResponse(
+				deleteData,
+				"Successfully deleted a Remaja",
+				true,
+				null,
+			);
+		} catch (error) {
+			return formatErrorResponse("An unexpected error occurred.", error);
 		}
-		const deleteData = await this.remajaService.deleteUser({
-			id: numericId,
-		});
-
-		return {
-			data: deleteData,
-			message: "Successfully deleted a Remaja",
-		};
 	}
 
 	@Patch("/:id")
@@ -215,20 +246,25 @@ export class RemajaController {
 			},
 		},
 	})
-	// @Roles(Role.Admin)
 	async updateRemaja(@Param("id") id: string, @Body() data: Remaja) {
-		const numericId = Number(id);
+		try {
+			const numericId = Number(id);
 
-		if (Number.isNaN(numericId)) {
-			throw new BadRequestException("Invalid ID provided.");
+			if (Number.isNaN(numericId)) {
+				throw new BadRequestException("Invalid ID provided.");
+			}
+			const updateData = await this.remajaService.updateUser({
+				where: { id: numericId },
+				data: data,
+			});
+			return formatResponse(
+				updateData,
+				"Successfully updated a Remaja",
+				true,
+				null,
+			);
+		} catch (error) {
+			return formatErrorResponse("An unexpected error occurred.", error);
 		}
-		const updateData = await this.remajaService.updateUser({
-			where: { id: numericId },
-			data: data,
-		});
-		return {
-			data: updateData,
-			message: "Successfully updated a Remaja",
-		};
 	}
 }

@@ -90,11 +90,21 @@ export class RemajaService {
 		return deleteUser;
 	}
 
-	async findById(id: number): Promise<Remaja | null> {
+	async findById(id: number): Promise<Partial<Remaja> | null> {
 		this.logger.log("findByID");
 		const searchRemaja = await this.prisma.remaja.findUnique({
 			where: {
 				id: id,
+			},
+			select: {
+				id: true,
+				nama: true,
+				alamat: true,
+				jenis_kelamin: true,
+				jenjang: true,
+				role: true,
+				sambung: true,
+				username: true,
 			},
 		});
 		return searchRemaja;

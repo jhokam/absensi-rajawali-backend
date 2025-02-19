@@ -1,5 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import {
+	formatErrorResponse,
+	formatResponse,
+} from "src/helper/response.helper";
 import { AuthService } from "./auth.service";
 
 @Controller("auth")
@@ -60,13 +64,14 @@ export class AuthController {
 		},
 	})
 	async signIn(@Body() signInDto: Record<string, any>) {
-		const result = await this.authService.signIn(
-			signInDto.username,
-			signInDto.password,
-		);
-		return {
-			...result,
-			message: "Login successful.",
-		};
+		try {
+			const result = await this.authService.signIn(
+				signInDto.username,
+				signInDto.password,
+			);
+			return formatResponse(result, "Login successful.", true, null);
+		} catch (error) {
+			return formatErrorResponse("An unexpected error occurred.", error);
+		}
 	}
 }
