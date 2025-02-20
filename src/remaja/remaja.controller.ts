@@ -103,7 +103,6 @@ export class RemajaController {
 				if (!/^\d+$/.test(id)) {
 					throw new BadRequestException("Invalid ID format. Must be a number.");
 				}
-
 				// Fetch users where ID contains the provided number (e.g., searching "5" returns 5, 15, 25)
 				data = await this.remajaService.getUsersByPartialId(id);
 			} else {
@@ -141,11 +140,6 @@ export class RemajaController {
 					type: "string",
 					example: "Successfully retrieved 1 Remaja data",
 				},
-				error: {
-					type: "string",
-					nullable: true,
-					example: null,
-				},
 				data: {
 					type: "object",
 					properties: {
@@ -157,13 +151,17 @@ export class RemajaController {
 							type: "string",
 							example: "Jane Doe",
 						},
-						alamat: {
+						username: {
 							type: "string",
-							example: "Jl. Sendangsari Utara XV No. 27",
+							example: "abdul",
 						},
 						jenis_kelamin: {
 							type: "string",
 							example: "Laki_Laki",
+						},
+						alamat: {
+							type: "string",
+							example: "Jl. Sendangsari Utara XV No. 27",
 						},
 						jenjang: {
 							type: "string",
@@ -177,18 +175,74 @@ export class RemajaController {
 							type: "string",
 							example: "Aktif",
 						},
-						username: {
-							type: "string",
-							example: "abdul",
-						},
 					},
+				},
+				error: {
+					type: "string",
+					nullable: true,
+					example: null,
 				},
 			},
 		},
 	})
 	@ApiResponse({
 		status: 404,
-		description: "Remaja with id ${id} not found",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+				message: {
+					type: "string",
+					example: "Remaja with ID 3 not found.",
+				},
+				data: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				error: {
+					type: "object",
+					properties: {
+						response: {
+							type: "object",
+							properties: {
+								message: {
+									type: "string",
+									example: "Remaja with ID 3 not found.",
+								},
+								error: {
+									type: "string",
+									example: "Not Found",
+								},
+								statusCode: {
+									type: "integer",
+									example: 404,
+								},
+							},
+						},
+						status: {
+							type: "integer",
+							example: 404,
+						},
+						options: {
+							type: "object",
+							properties: {},
+						},
+						message: {
+							type: "string",
+							example: "Remaja with ID 3 not found.",
+						},
+						name: {
+							type: "string",
+							example: "NotFoundException",
+						},
+					},
+				},
+			},
+		},
 	})
 	async getRemajaById(@Param("id") id: string): Promise<any> {
 		const numericId = Number(id);
@@ -254,7 +308,7 @@ export class RemajaController {
 		},
 	})
 	@ApiResponse({
-		status: 200,
+		status: 201,
 		description: "Successfully created a new Remaja",
 		schema: {
 			type: "object",
@@ -308,6 +362,32 @@ export class RemajaController {
 							example: "abdul",
 						},
 					},
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 500,
+		description: "Failed to create a new Remaja",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+				message: {
+					type: "string",
+					example: "Failed to create user.",
+				},
+				data: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				error: {
+					type: "object",
+					example: {},
 				},
 			},
 		},

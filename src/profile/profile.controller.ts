@@ -5,6 +5,7 @@ import {
 	Req,
 	UseGuards,
 } from "@nestjs/common";
+import { ApiResponse } from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
 import { formatResponse } from "../helper/response.helper";
 import { PrismaService } from "../prisma/prisma.service";
@@ -29,6 +30,175 @@ export class ProfileController {
 		this.prismaService = prismaService;
 	}
 
+	@ApiResponse({
+		status: 200,
+		description: "Profile retrieved successfully",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+				},
+				message: {
+					type: "string",
+					example: "Profile retrieved successfully",
+				},
+				data: {
+					type: "object",
+					properties: {
+						id: {
+							type: "integer",
+							example: 1,
+						},
+						nama: {
+							type: "string",
+							example: "Jane Doe",
+						},
+						username: {
+							type: "string",
+							example: "abdul",
+						},
+						jenis_kelamin: {
+							type: "string",
+							example: "Laki_Laki",
+						},
+						alamat: {
+							type: "string",
+							example: "Jl. Sendangsari Utara XV No. 27",
+						},
+						jenjang: {
+							type: "string",
+							example: "Remaja",
+						},
+						role: {
+							type: "string",
+							example: "User",
+						},
+						sambung: {
+							type: "string",
+							example: "Aktif",
+						},
+					},
+				},
+				error: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 401,
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+				message: {
+					type: "string",
+					example: "Unauthorized",
+				},
+				data: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				error: {
+					type: "object",
+					properties: {
+						response: {
+							type: "object",
+							properties: {
+								message: {
+									type: "string",
+									example: "Unauthorized",
+								},
+								statusCode: {
+									type: "integer",
+									example: 401,
+								},
+							},
+						},
+						status: {
+							type: "integer",
+							example: 401,
+						},
+						options: {
+							type: "object",
+							properties: {},
+						},
+						message: {
+							type: "string",
+							example: "Unauthorized",
+						},
+						name: {
+							type: "string",
+							example: "UnauthorizedException",
+						},
+					},
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 401,
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+				message: {
+					type: "string",
+					example: "User not found",
+				},
+				data: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				error: {
+					type: "object",
+					properties: {
+						response: {
+							type: "object",
+							properties: {
+								message: {
+									type: "string",
+									example: "User not found",
+								},
+								statusCode: {
+									type: "integer",
+									example: 401,
+								},
+							},
+						},
+						status: {
+							type: "integer",
+							example: 401,
+						},
+						options: {
+							type: "object",
+							properties: {},
+						},
+						message: {
+							type: "string",
+							example: "User not found",
+						},
+						name: {
+							type: "string",
+							example: "NotFoundException",
+						},
+					},
+				},
+			},
+		},
+	})
 	@Get()
 	async getProfile(@Req() req: RequestWithUser) {
 		const user = await this.prismaService.remaja.findUnique({

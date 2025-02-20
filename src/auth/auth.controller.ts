@@ -1,12 +1,4 @@
-import {
-	Body,
-	Controller,
-	HttpCode,
-	HttpStatus,
-	InternalServerErrorException,
-	Post,
-	UnauthorizedException,
-} from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { ApiBody, ApiResponse } from "@nestjs/swagger";
 import { formatResponse } from "src/helper/response.helper";
 import { AuthService } from "./auth.service";
@@ -68,7 +60,62 @@ export class AuthController {
 			},
 		},
 	})
-	async signIn(@Body() signInDto: Record<string, any>) {
+	@ApiResponse({
+		status: 401,
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+				message: {
+					type: "string",
+					example: "Invalid credentials",
+				},
+				data: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				error: {
+					type: "object",
+					properties: {
+						response: {
+							type: "object",
+							properties: {
+								message: {
+									type: "string",
+									example: "Invalid credentials",
+								},
+								statusCode: {
+									type: "integer",
+									example: 401,
+								},
+							},
+						},
+						status: {
+							type: "integer",
+							example: 401,
+						},
+						options: {
+							type: "object",
+							properties: {},
+						},
+						message: {
+							type: "string",
+							example: "Invalid credentials",
+						},
+						name: {
+							type: "string",
+							example: "UnauthorizedException",
+						},
+					},
+				},
+			},
+		},
+	})
+	async signIn(@Body() signInDto: Record<string, string>) {
 		const result = await this.authService.signIn(
 			signInDto.username,
 			signInDto.password,

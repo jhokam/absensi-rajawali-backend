@@ -4,7 +4,7 @@ import {
 	Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Role } from "@prisma/client";
+import type { Role } from "@prisma/client";
 import type { Observable } from "rxjs";
 
 @Injectable()
