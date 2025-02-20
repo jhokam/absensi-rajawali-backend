@@ -4,6 +4,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	InternalServerErrorException,
 	NotFoundException,
 	Param,
 	Patch,
@@ -12,13 +13,14 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import { ApiBody, ApiResponse } from "@nestjs/swagger";
-import type { Remaja } from "@prisma/client";
+import { Prisma, Remaja } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 import {
 	formatErrorResponse,
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
+import type { PublicRemaja, RemajaResponseArray } from "../types/remaja";
 import { RemajaService } from "./remaja.service";
 
 @Controller("/remaja")
@@ -95,42 +97,32 @@ export class RemajaController {
 	})
 	async getAllRemaja(@Query("id") id?: string): Promise<any> {
 		try {
-			let data: Partial<Remaja>[] | Partial<Remaja> | null;
-			let message = "Successfully retrieved Remaja data";
+			let data;
 
 			if (id) {
-				// If an ID is provided, retrieve a single Remaja
-				const numericId = Number(id);
-
-				if (Number.isNaN(numericId)) {
-					return formatErrorResponse(
-						"Invalid ID provided.",
-						new BadRequestException("Invalid ID provided."),
-					);
+				if (!/^\d+$/.test(id)) {
+					throw new BadRequestException("Invalid ID format. Must be a number.");
 				}
 
-				const remaja = await this.remajaService.getUserById(numericId);
-
-				if (!remaja) {
-					return formatErrorResponse(
-						`Remaja with ID ${numericId} not found.`,
-						new NotFoundException(`Remaja with ID ${numericId} not found.`),
-					);
-				}
-
-				data = remaja; // Assign single Remaja object
-				message = `Successfully retrieved Remaja with ID ${numericId}`;
+				// Fetch users where ID contains the provided number (e.g., searching "5" returns 5, 15, 25)
+				data = await this.remajaService.getUsersByPartialId(id);
 			} else {
-				// If no ID is provided, retrieve all Remaja
+				// Fetch all users if no ID is provided
 				data = await this.remajaService.getAllUsers();
-				message = "Successfully retrieved all Remaja data";
 			}
 
-			return formatResponse(data, message, true, null);
-		} catch (error: any) {
+			return formatResponse(
+				data,
+				"Successfully retrieved Remaja data",
+				true,
+				null,
+			);
+		} catch (error) {
 			console.error("Error retrieving Remaja:", error);
-
-			throw error;
+			return formatErrorResponse(
+				"Failed to retrieve Remaja. Please try again later.",
+				new InternalServerErrorException("Failed to retrieve Remaja."),
+			);
 		}
 	}
 
@@ -200,25 +192,22 @@ export class RemajaController {
 	})
 	async getRemajaById(@Param("id") id: string): Promise<any> {
 		const numericId = Number(id);
-
 		if (Number.isNaN(numericId)) {
 			throw new BadRequestException("Invalid ID provided.");
 		}
 
 		try {
-			const remaja = await this.remajaService.getUserById(numericId);
-
+			const remaja = await this.remajaService.getUserById(id);
 			if (!remaja) {
 				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
-
 			return formatResponse(
 				remaja,
 				"Successfully retrieved 1 Remaja data",
 				true,
 				null,
 			);
-		} catch (error: any) {
+		} catch (error) {
 			console.error("Error retrieving Remaja:", error);
 			throw error;
 		}
@@ -323,7 +312,7 @@ export class RemajaController {
 			},
 		},
 	})
-	async createRemaja(@Body() data: Remaja): Promise<any> {
+	async createRemaja(@Body() data: Prisma.RemajaCreateInput): Promise<any> {
 		try {
 			const createdRemaja = await this.remajaService.createUser(data);
 			return formatResponse(
@@ -332,16 +321,11 @@ export class RemajaController {
 				true,
 				null,
 			);
-		} catch (error: any) {
-			// Specific error handling for known cases
+		} catch (error) {
+			console.error("Error creating Remaja:", error);
 			if (error instanceof BadRequestException) {
 				return formatErrorResponse(error.message, error);
 			}
-
-			// Log the error for debugging purposes
-			console.error("Error creating Remaja:", error);
-
-			// Generic error handling for unexpected errors
 			throw error;
 		}
 	}
@@ -407,43 +391,35 @@ export class RemajaController {
 		},
 	})
 	async deleteRemaja(@Param("id") id: string): Promise<any> {
+		const numericId = Number(id);
+		if (Number.isNaN(numericId)) {
+			return formatErrorResponse(
+				"Invalid ID provided.",
+				new BadRequestException("Invalid ID provided."),
+			);
+		}
+
 		try {
-			const numericId = Number(id);
-
-			if (Number.isNaN(numericId)) {
-				return formatErrorResponse(
-					"Invalid ID provided.",
-					new BadRequestException("Invalid ID provided."),
-				);
-			}
-
 			const deletedRemaja = await this.remajaService.deleteUser({
 				id: numericId,
 			});
-
 			if (!deletedRemaja) {
 				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
-
 			return formatResponse(
 				deletedRemaja,
 				"Successfully deleted a Remaja",
 				true,
 				null,
 			);
-		} catch (error: any) {
-			// Specific error handling for known cases
+		} catch (error) {
+			console.error("Error deleting Remaja:", error);
 			if (
 				error instanceof NotFoundException ||
 				error instanceof BadRequestException
 			) {
 				return formatErrorResponse(error.message, error);
 			}
-
-			// Log the error for debugging purposes
-			console.error("Error deleting Remaja:", error);
-
-			// Generic error handling for unexpected errors
 			throw error;
 		}
 	}
@@ -549,28 +525,31 @@ export class RemajaController {
 	})
 	async updateRemaja(
 		@Param("id") id: string,
-		@Body() data: Remaja,
+		@Body() data: Prisma.RemajaUpdateInput,
 	): Promise<any> {
+		const numericId = Number(id);
+		if (Number.isNaN(numericId)) {
+			return formatErrorResponse(
+				"Invalid ID provided.",
+				new BadRequestException("Invalid ID provided."),
+			);
+		}
+
+		if (!data || Object.keys(data).length === 0) {
+			return formatErrorResponse(
+				"Update data cannot be empty.",
+				new BadRequestException("Update data cannot be empty."),
+			);
+		}
+
 		try {
-			const numericId = Number(id);
-
-			if (Number.isNaN(numericId)) {
-				return formatErrorResponse(
-					"Invalid ID provided.",
-					new BadRequestException("Invalid ID provided."),
-				);
-			}
-
-			const updatedRemaja = await this.remajaService.updateUser({
-				where: { id: numericId },
-				data: data,
-			});
+			const updatedRemaja = await this.remajaService.updateUser(
+				{ id: numericId },
+				data,
+			);
 
 			if (!updatedRemaja) {
-				return formatErrorResponse(
-					`Remaja with ID ${numericId} not found.`,
-					new NotFoundException(`Remaja with ID ${numericId} not found.`),
-				);
+				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
 
 			return formatResponse(
@@ -579,19 +558,14 @@ export class RemajaController {
 				true,
 				null,
 			);
-		} catch (error: any) {
-			// Specific error handling for known cases
+		} catch (error) {
+			console.error("Error updating Remaja:", error);
 			if (
 				error instanceof NotFoundException ||
 				error instanceof BadRequestException
 			) {
 				return formatErrorResponse(error.message, error);
 			}
-
-			// Log the error for debugging purposes
-			console.error("Error updating Remaja:", error);
-
-			// Generic error handling for unexpected errors
 			throw error;
 		}
 	}

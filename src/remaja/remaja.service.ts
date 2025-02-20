@@ -1,23 +1,24 @@
 import { Injectable, Logger } from "@nestjs/common";
-import type { Prisma, Remaja } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { hash } from "argon2";
 import { PrismaService } from "src/prisma/prisma.service";
+import type { PublicRemaja } from "../types/remaja";
 
 @Injectable()
 export class RemajaService {
 	private readonly prisma: PrismaService;
+	private readonly logger = new Logger(RemajaService.name);
 
 	constructor(prisma: PrismaService) {
 		this.prisma = prisma;
 	}
-	private logger = new Logger("RemajaService");
 
-	private async findRemaja(
-		where: Prisma.RemajaWhereUniqueInput,
-	): Promise<Partial<Remaja> | null> {
+	private async findRemaja(searchTerm: string): Promise<PublicRemaja[]> {
 		try {
-			return await this.prisma.remaja.findUnique({
-				where,
+			return await this.prisma.remaja.findMany({
+				where: {
+					id: Number.isNaN(Number(searchTerm)) ? undefined : Number(searchTerm),
+				},
 				select: this.getRemajaSelect(),
 			});
 		} catch (error) {
@@ -26,19 +27,13 @@ export class RemajaService {
 		}
 	}
 
-	async getUserById(id: number): Promise<Partial<Remaja> | null> {
-		this.logger.log(`getUserById: ${id}`);
-		return await this.findRemaja({ id });
+	async getUserById(searchTerm: string): Promise<PublicRemaja | null> {
+		this.logger.log(`getUserById searchTerm: ${searchTerm}`);
+		const results = await this.findRemaja(searchTerm);
+		return results.length > 0 ? results[0] : null;
 	}
 
-	async remaja(
-		remajaWhereUniqueInput: Prisma.RemajaWhereUniqueInput,
-	): Promise<Partial<Remaja> | null> {
-		this.logger.log(`remaja: ${JSON.stringify(remajaWhereUniqueInput)}`);
-		return await this.findRemaja(remajaWhereUniqueInput);
-	}
-
-	async getAllUsers(): Promise<Partial<Remaja>[]> {
+	async getAllUsers(): Promise<PublicRemaja[]> {
 		this.logger.log("getAllUsers");
 		try {
 			return await this.prisma.remaja.findMany({
@@ -53,35 +48,36 @@ export class RemajaService {
 		}
 	}
 
-	// Post
-	async createUser(data: Prisma.RemajaCreateInput): Promise<Partial<Remaja>> {
+	async getUsersByPartialId(id: string) {
+		const allUsers = await this.prisma.remaja.findMany(); // Get all records
+
+		// Filter IDs that contain the search term (convert both to strings)
+		return allUsers.filter((user) => user.id.toString().includes(id));
+	}
+
+	async createUser(data: Prisma.RemajaCreateInput): Promise<PublicRemaja> {
 		try {
 			this.logger.log("createUser");
 			const hashedPassword = await hash(data.password);
-			const createUser = await this.prisma.remaja.create({
-				data: {
-					...data,
-					password: hashedPassword,
-				},
+			return await this.prisma.remaja.create({
+				data: { ...data, password: hashedPassword },
 				select: this.getRemajaSelect(),
 			});
-			return createUser;
 		} catch (error) {
 			this.logger.error(`Error creating user: ${error.message}`, error.stack);
 			throw new Error("Failed to create user.");
 		}
 	}
 
-	// Patch
-	async updateUser(params: {
-		where: Prisma.RemajaWhereUniqueInput;
-		data: Prisma.RemajaUpdateInput;
-	}): Promise<Partial<Remaja>> {
-		this.logger.log(`updateUser: ${JSON.stringify(params.where)}`);
+	async updateUser(
+		where: Prisma.RemajaWhereUniqueInput,
+		data: Prisma.RemajaUpdateInput,
+	): Promise<PublicRemaja> {
+		this.logger.log(`updateUser: ${JSON.stringify(where)}`);
 		try {
 			return await this.prisma.remaja.update({
-				where: params.where,
-				data: params.data,
+				where,
+				data,
 				select: this.getRemajaSelect(),
 			});
 		} catch (error) {
@@ -90,26 +86,19 @@ export class RemajaService {
 		}
 	}
 
-	// Delete
 	async deleteUser(
 		where: Prisma.RemajaWhereUniqueInput,
-	): Promise<Partial<Remaja>> {
+	): Promise<PublicRemaja> {
 		try {
 			this.logger.log("deleteUser");
-			const deleteUser = await this.prisma.remaja.delete({
+			return await this.prisma.remaja.delete({
 				where,
 				select: this.getRemajaSelect(),
 			});
-			return deleteUser;
 		} catch (error) {
 			this.logger.error(`Error deleting user: ${error.message}`, error.stack);
 			throw new Error("Failed to delete user.");
 		}
-	}
-
-	async findById(id: number): Promise<Partial<Remaja> | null> {
-		this.logger.log(`findByID: ${id}`);
-		return await this.findRemaja({ id });
 	}
 
 	private getRemajaSelect(): Prisma.RemajaSelect {
