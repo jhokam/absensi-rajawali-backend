@@ -12,15 +12,22 @@ import {
 	Query,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiBody, ApiResponse } from "@nestjs/swagger";
-import { Prisma, Remaja } from "@prisma/client";
+import {
+	ApiBody,
+	ApiCreatedResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiResponse,
+} from "@nestjs/swagger";
+import type { Prisma } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
+import type { RemajaDto } from "src/dto/remaja.dto";
 import {
 	formatErrorResponse,
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
-import type { PublicRemaja, RemajaResponseArray } from "../types/remaja";
+import type { RemajaResponse, RemajaResponseArray } from "../types/remaja";
 import { RemajaService } from "./remaja.service";
 
 @Controller("/remaja")
@@ -33,8 +40,7 @@ export class RemajaController {
 	}
 
 	@Get()
-	@ApiResponse({
-		status: 200,
+	@ApiOkResponse({
 		description: "Successfully retrieved all Remaja data",
 		schema: {
 			type: "object",
@@ -95,7 +101,7 @@ export class RemajaController {
 			},
 		},
 	})
-	async getAllRemaja(@Query("id") id?: string): Promise<any> {
+	async getAllRemaja(@Query("id") id?: string): Promise<RemajaResponseArray> {
 		try {
 			let data;
 
@@ -111,9 +117,9 @@ export class RemajaController {
 			}
 
 			return formatResponse(
-				data,
-				"Successfully retrieved Remaja data",
 				true,
+				"Successfully retrieved Remaja data",
+				data,
 				null,
 			);
 		} catch (error) {
@@ -126,8 +132,7 @@ export class RemajaController {
 	}
 
 	@Get("/:id")
-	@ApiResponse({
-		status: 200,
+	@ApiOkResponse({
 		description: "Successfully retrieved 1 Remaja data",
 		schema: {
 			type: "object",
@@ -185,8 +190,8 @@ export class RemajaController {
 			},
 		},
 	})
-	@ApiResponse({
-		status: 404,
+	@ApiNotFoundResponse({
+		description: "Remaja not found",
 		schema: {
 			type: "object",
 			properties: {
@@ -244,7 +249,7 @@ export class RemajaController {
 			},
 		},
 	})
-	async getRemajaById(@Param("id") id: string): Promise<any> {
+	async getRemajaById(@Param("id") id: string): Promise<RemajaResponse> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			throw new BadRequestException("Invalid ID provided.");
@@ -256,9 +261,9 @@ export class RemajaController {
 				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
 			return formatResponse(
-				remaja,
-				"Successfully retrieved 1 Remaja data",
 				true,
+				"Successfully retrieved 1 Remaja data",
+				remaja,
 				null,
 			);
 		} catch (error) {
@@ -307,8 +312,7 @@ export class RemajaController {
 			},
 		},
 	})
-	@ApiResponse({
-		status: 201,
+	@ApiCreatedResponse({
 		description: "Successfully created a new Remaja",
 		schema: {
 			type: "object",
@@ -392,13 +396,13 @@ export class RemajaController {
 			},
 		},
 	})
-	async createRemaja(@Body() data: Prisma.RemajaCreateInput): Promise<any> {
+	async createRemaja(@Body() data: RemajaDto): Promise<RemajaResponse> {
 		try {
 			const createdRemaja = await this.remajaService.createUser(data);
 			return formatResponse(
-				createdRemaja,
-				"Successfully created a new Remaja",
 				true,
+				"Successfully created a new Remaja",
+				createdRemaja,
 				null,
 			);
 		} catch (error) {
@@ -411,8 +415,7 @@ export class RemajaController {
 	}
 
 	@Delete("/:id")
-	@ApiResponse({
-		status: 200,
+	@ApiOkResponse({
 		description: "Successfully deleted a Remaja",
 		schema: {
 			type: "object",
@@ -470,7 +473,7 @@ export class RemajaController {
 			},
 		},
 	})
-	async deleteRemaja(@Param("id") id: string): Promise<any> {
+	async deleteRemaja(@Param("id") id: string): Promise<RemajaResponse> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			return formatErrorResponse(
@@ -487,9 +490,9 @@ export class RemajaController {
 				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
 			}
 			return formatResponse(
-				deletedRemaja,
-				"Successfully deleted a Remaja",
 				true,
+				"Successfully deleted a Remaja",
+				deletedRemaja,
 				null,
 			);
 		} catch (error) {
@@ -544,8 +547,7 @@ export class RemajaController {
 			},
 		},
 	})
-	@ApiResponse({
-		status: 200,
+	@ApiOkResponse({
 		description: "Successfully updated a Remaja",
 		schema: {
 			type: "object",
@@ -606,7 +608,7 @@ export class RemajaController {
 	async updateRemaja(
 		@Param("id") id: string,
 		@Body() data: Prisma.RemajaUpdateInput,
-	): Promise<any> {
+	): Promise<RemajaResponse> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			return formatErrorResponse(
@@ -633,9 +635,9 @@ export class RemajaController {
 			}
 
 			return formatResponse(
-				updatedRemaja,
-				"Successfully updated a Remaja",
 				true,
+				"Successfully updated a Remaja",
+				updatedRemaja,
 				null,
 			);
 		} catch (error) {

@@ -1,5 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import { Body, Controller, Post } from "@nestjs/common";
+import {
+	ApiBody,
+	ApiOkResponse,
+	ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 import { formatResponse } from "src/helper/response.helper";
 import { AuthService } from "./auth.service";
 
@@ -11,7 +15,6 @@ export class AuthController {
 		this.authService = authService;
 	}
 
-	@HttpCode(HttpStatus.OK)
 	@Post("login")
 	@ApiBody({
 		schema: {
@@ -28,8 +31,7 @@ export class AuthController {
 			},
 		},
 	})
-	@ApiResponse({
-		status: 200,
+	@ApiOkResponse({
 		description: "Login successful.",
 		schema: {
 			type: "object",
@@ -60,8 +62,7 @@ export class AuthController {
 			},
 		},
 	})
-	@ApiResponse({
-		status: 401,
+	@ApiUnauthorizedResponse({
 		schema: {
 			type: "object",
 			properties: {
@@ -120,6 +121,6 @@ export class AuthController {
 			signInDto.username,
 			signInDto.password,
 		);
-		return formatResponse(result, "Login successful.", true, null);
+		return formatResponse(true, "Login successful.", result, null);
 	}
 }

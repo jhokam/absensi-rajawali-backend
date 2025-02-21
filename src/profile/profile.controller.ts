@@ -5,7 +5,11 @@ import {
 	Req,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiResponse } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiResponse,
+	ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
 import { formatResponse } from "../helper/response.helper";
 import { PrismaService } from "../prisma/prisma.service";
@@ -30,8 +34,7 @@ export class ProfileController {
 		this.prismaService = prismaService;
 	}
 
-	@ApiResponse({
-		status: 200,
+	@ApiOkResponse({
 		description: "Profile retrieved successfully",
 		schema: {
 			type: "object",
@@ -89,8 +92,7 @@ export class ProfileController {
 			},
 		},
 	})
-	@ApiResponse({
-		status: 401,
+	@ApiUnauthorizedResponse({
 		schema: {
 			type: "object",
 			properties: {
@@ -221,6 +223,6 @@ export class ProfileController {
 			throw new NotFoundException("User not found");
 		}
 
-		return formatResponse(user, "Profile retrieved successfully", true, null);
+		return formatResponse(true, "Profile retrieved successfully", user, null);
 	}
 }

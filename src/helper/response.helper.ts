@@ -1,16 +1,11 @@
-export interface ApiResponse<T> {
-	success: boolean;
-	message: string;
-	data: T | null;
-	error: any | null;
-}
+import type { ResponseBase } from "src/types/remaja";
 
 export function formatResponse<T>(
-	data: T | null,
-	message: string,
 	success: boolean,
+	message: string,
+	data: T | null,
 	error: any | null = null,
-): ApiResponse<T> {
+): ResponseBase<T> {
 	return {
 		success,
 		message,
@@ -22,6 +17,6 @@ export function formatResponse<T>(
 export function formatErrorResponse(
 	message: string,
 	error: any = null,
-): ApiResponse<null> {
-	return formatResponse(null, message, false, error);
+): ResponseBase<null> {
+	return formatResponse(false, message, null, error);
 }
