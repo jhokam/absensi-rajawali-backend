@@ -14,16 +14,16 @@ datasource db {
 }
 
 enum JenisKelamin {
-  Laki_Laki
+  Laki_Laki @map("Laki-Laki")
   Perempuan
 }
 
 enum Jenjang {
   Paud
   Caberawit
-  Pra_Remaja
+  Pra_Remaja @map("Pra Remaja")
   Remaja
-  Pra_Nikah
+  Pra_Nikah  @map("Pra Nikah")
 }
 
 enum Role {
@@ -33,19 +33,44 @@ enum Role {
 
 enum Sambung {
   Aktif
-  Tidak_Aktif
+  Tidak_Aktif @map("Tidak Aktif")
+}
+
+enum PendidikanTerakhir {
+  PAUD
+  TK
+  SD
+  SMP
+  SMA_SMK @map("SMA/SMK")
+  D1_D3   @map("D1-D3")
+  S1_D4   @map("S1/D4")
+  S2
+  S3
+}
+
+enum Keterangan {
+  Pendatang
+  Pribumi
 }
 
 model Remaja {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  nama String
-  username String @unique
-  jenis_kelamin JenisKelamin
-  jenjang Jenjang
-  alamat String
-  sambung Sambung
-  role Role
-  password String
+  id                       Int                @id @default(autoincrement())
+  created_at               DateTime           @default(now())
+  updated_at               DateTime           @updatedAt
+  nama                     String             @db.VarChar(50)
+  username                 String?            @unique
+  jenis_kelamin            JenisKelamin
+  tempat_lahir             String?            @db.VarChar(32)
+  tanggal_lahir            DateTime           @db.Date
+  jenjang                  Jenjang
+  nomer_whatsapp           String?            @db.VarChar(14)
+  pendidikan_terakhir      PendidikanTerakhir
+  nama_orang_tua           String?            @db.VarChar(50)
+  nomer_whatsapp_orang_tua String?            @db.VarChar(14)
+  sambung                  Sambung            @default(Tidak_Aktif)
+  alamat_tempat_tinggal    String             @db.VarChar(100)
+  keterangan               Keterangan
+  alamat_asal              String?            @db.VarChar(100)
+  role                     Role?              @default(User)
+  password                 String?            @db.VarChar(128)
 }
