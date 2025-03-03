@@ -6,9 +6,10 @@ import { UsersModule } from "./users/users.module";
 import { ProfileService } from './profile/profile.service';
 import { ProfileController } from './profile/profile.controller';
 import { ProfileModule } from './profile/profile.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
-	imports: [RemajaModule, PrismaModule, AuthModule, UsersModule, ProfileModule],
+	imports: [RemajaModule, PrismaModule, AuthModule, UsersModule, ProfileModule, SeedModule],
 	providers: [ProfileService],
 	controllers: [ProfileController],
 })

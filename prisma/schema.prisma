@@ -27,6 +27,7 @@ enum Jenjang {
 }
 
 enum Role {
+  Super_Admin @map("Super Admin")
   Admin
   User
 }
@@ -58,7 +59,6 @@ model Remaja {
   created_at               DateTime           @default(now())
   updated_at               DateTime           @updatedAt
   nama                     String             @db.VarChar(50)
-  username                 String?            @unique
   jenis_kelamin            JenisKelamin
   tempat_lahir             String?            @db.VarChar(32)
   tanggal_lahir            DateTime           @db.Date
@@ -71,6 +71,36 @@ model Remaja {
   alamat_tempat_tinggal    String             @db.VarChar(100)
   keterangan               Keterangan
   alamat_asal              String?            @db.VarChar(100)
-  role                     Role?              @default(User)
-  password                 String?            @db.VarChar(128)
+  kelompok_id              Kelompok           @relation(fields: [kelompokId], references: [id])
+  kelompokId               Int
+  User                     User?
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  username   String   @unique @db.VarChar(50)
+  password   String   @db.VarChar(128)
+  role       Role     @default(User)
+  Remaja     Remaja   @relation(fields: [remajaId], references: [id])
+  remajaId   Int      @unique
+}
+
+model Kelompok {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  nama       String   @unique @db.VarChar(50)
+  Remaja     Remaja[]
+  desa_id    Desa     @relation(fields: [desaId], references: [id])
+  desaId     Int
+}
+
+model Desa {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  nama       String     @unique @db.VarChar(50)
+  Kelompok   Kelompok[]
 }
