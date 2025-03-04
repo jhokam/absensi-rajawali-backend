@@ -1,7 +1,7 @@
 import { JenisKelamin, Jenjang, Role, Sambung } from "@prisma/client";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-export class RemajaDto {
+export class GenerusDto {
 	@IsString()
 	@IsNotEmpty()
 	nama: string;

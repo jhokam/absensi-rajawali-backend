@@ -203,18 +203,16 @@ export class ProfileController {
 	})
 	@Get()
 	async getProfile(@Req() req: RequestWithUser) {
-		const user = await this.prismaService.remaja.findUnique({
+		const user = await this.prismaService.generus.findUnique({
 			where: {
 				id: req.user.sub,
 			},
 			select: {
 				id: true,
 				nama: true,
-				username: true,
 				jenis_kelamin: true,
-				alamat: true,
+				alamat_tempat_tinggal: true,
 				jenjang: true,
-				role: true,
 				sambung: true,
 			},
 		});

@@ -1,15 +1,20 @@
 import { Module } from "@nestjs/common";
 import { AuthModule } from "./auth/auth.module";
+import { GenerusModule } from "./generus/generus.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { RemajaModule } from "./remaja/remaja.module";
+import { ProfileController } from "./profile/profile.controller";
+import { ProfileModule } from "./profile/profile.module";
+import { ProfileService } from "./profile/profile.service";
 import { UsersModule } from "./users/users.module";
-import { ProfileService } from './profile/profile.service';
-import { ProfileController } from './profile/profile.controller';
-import { ProfileModule } from './profile/profile.module';
-import { SeedModule } from './seed/seed.module';
 
 @Module({
-	imports: [RemajaModule, PrismaModule, AuthModule, UsersModule, ProfileModule, SeedModule],
+	imports: [
+		GenerusModule,
+		PrismaModule,
+		AuthModule,
+		UsersModule,
+		ProfileModule,
+	],
 	providers: [ProfileService],
 	controllers: [ProfileController],
 })

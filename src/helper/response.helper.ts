@@ -1,4 +1,4 @@
-import type { ResponseBase } from "src/types/remaja";
+import type { ResponseBase } from "src/types";
 
 export function formatResponse<T>(
 	success: boolean,

@@ -1,4 +1,4 @@
-import type { Remaja } from "@prisma/client";
+import type { Generus } from "@prisma/client";
 
 export type ErrorResponse = {
 	response: {
@@ -26,7 +26,10 @@ export type ResponseBaseWithArray<T> = {
 	data: T[] | null;
 };
 
-export type PublicRemaja = Omit<Remaja, "password" | "createdAt" | "updatedAt">;
+export type PublicGenerus = Omit<
+	Generus,
+	"password" | "createdAt" | "updatedAt"
+>;
 
-export type RemajaResponse = ResponseBase<PublicRemaja>;
-export type RemajaResponseArray = ResponseBaseWithArray<PublicRemaja>;
+export type GenerusResponse = ResponseBase<PublicGenerus>;
+export type GenerusResponseArray = ResponseBaseWithArray<PublicGenerus>;

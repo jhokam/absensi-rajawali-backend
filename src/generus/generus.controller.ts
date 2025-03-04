@@ -21,27 +21,27 @@ import {
 } from "@nestjs/swagger";
 import type { Prisma } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
-import type { RemajaDto } from "src/dto/remaja.dto";
+import type { GenerusDto } from "src/dto/generus.dto";
 import {
 	formatErrorResponse,
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
-import type { RemajaResponse, RemajaResponseArray } from "../types/remaja";
-import { RemajaService } from "./remaja.service";
+import type { GenerusResponse, GenerusResponseArray } from "../types";
+import { GenerusService } from "./generus.service";
 
-@Controller("/remaja")
+@Controller("/generus")
 @UseGuards(AuthGuard, RolesGuard)
-export class RemajaController {
-	private readonly remajaService: RemajaService;
+export class GenerusController {
+	private readonly generusService: GenerusService;
 
-	constructor(remajaService: RemajaService) {
-		this.remajaService = remajaService;
+	constructor(generusService: GenerusService) {
+		this.generusService = generusService;
 	}
 
 	@Get()
 	@ApiOkResponse({
-		description: "Successfully retrieved all Remaja data",
+		description: "Successfully retrieved all Generus data",
 		schema: {
 			type: "object",
 			properties: {
@@ -51,7 +51,7 @@ export class RemajaController {
 				},
 				message: {
 					type: "string",
-					example: "Successfully retrieved all Remaja data",
+					example: "Successfully retrieved all Generus data",
 				},
 				error: {
 					type: "string",
@@ -81,7 +81,7 @@ export class RemajaController {
 							},
 							jenjang: {
 								type: "string",
-								example: "Remaja",
+								example: "Generus",
 							},
 							role: {
 								type: "string",
@@ -101,7 +101,7 @@ export class RemajaController {
 			},
 		},
 	})
-	async getAllRemaja(@Query("id") id?: string): Promise<RemajaResponseArray> {
+	async getAllGenerus(@Query("id") id?: string): Promise<GenerusResponseArray> {
 		try {
 			let data;
 
@@ -110,30 +110,30 @@ export class RemajaController {
 					throw new BadRequestException("Invalid ID format. Must be a number.");
 				}
 				// Fetch users where ID contains the provided number (e.g., searching "5" returns 5, 15, 25)
-				data = await this.remajaService.getUsersByPartialId(id);
+				data = await this.generusService.getUsersByPartialId(id);
 			} else {
 				// Fetch all users if no ID is provided
-				data = await this.remajaService.getAllUsers();
+				data = await this.generusService.getAllUsers();
 			}
 
 			return formatResponse(
 				true,
-				"Successfully retrieved Remaja data",
+				"Successfully retrieved Generus data",
 				data,
 				null,
 			);
 		} catch (error) {
-			console.error("Error retrieving Remaja:", error);
+			console.error("Error retrieving Generus:", error);
 			return formatErrorResponse(
-				"Failed to retrieve Remaja. Please try again later.",
-				new InternalServerErrorException("Failed to retrieve Remaja."),
+				"Failed to retrieve Generus. Please try again later.",
+				new InternalServerErrorException("Failed to retrieve Generus."),
 			);
 		}
 	}
 
 	@Get("/:id")
 	@ApiOkResponse({
-		description: "Successfully retrieved 1 Remaja data",
+		description: "Successfully retrieved 1 Generus data",
 		schema: {
 			type: "object",
 			properties: {
@@ -143,7 +143,7 @@ export class RemajaController {
 				},
 				message: {
 					type: "string",
-					example: "Successfully retrieved 1 Remaja data",
+					example: "Successfully retrieved 1 Generus data",
 				},
 				data: {
 					type: "object",
@@ -170,7 +170,7 @@ export class RemajaController {
 						},
 						jenjang: {
 							type: "string",
-							example: "Remaja",
+							example: "Generus",
 						},
 						role: {
 							type: "string",
@@ -191,7 +191,7 @@ export class RemajaController {
 		},
 	})
 	@ApiNotFoundResponse({
-		description: "Remaja not found",
+		description: "Generus not found",
 		schema: {
 			type: "object",
 			properties: {
@@ -201,7 +201,7 @@ export class RemajaController {
 				},
 				message: {
 					type: "string",
-					example: "Remaja with ID 3 not found.",
+					example: "Generus with ID 3 not found.",
 				},
 				data: {
 					type: "string",
@@ -216,7 +216,7 @@ export class RemajaController {
 							properties: {
 								message: {
 									type: "string",
-									example: "Remaja with ID 3 not found.",
+									example: "Generus with ID 3 not found.",
 								},
 								error: {
 									type: "string",
@@ -238,7 +238,7 @@ export class RemajaController {
 						},
 						message: {
 							type: "string",
-							example: "Remaja with ID 3 not found.",
+							example: "Generus with ID 3 not found.",
 						},
 						name: {
 							type: "string",
@@ -249,25 +249,25 @@ export class RemajaController {
 			},
 		},
 	})
-	async getRemajaById(@Param("id") id: string): Promise<RemajaResponse> {
+	async getGenerusById(@Param("id") id: string): Promise<GenerusResponse> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			throw new BadRequestException("Invalid ID provided.");
 		}
 
 		try {
-			const remaja = await this.remajaService.getUserById(id);
-			if (!remaja) {
-				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
+			const generus = await this.generusService.getUserById(id);
+			if (!generus) {
+				throw new NotFoundException(`Generus with ID ${numericId} not found.`);
 			}
 			return formatResponse(
 				true,
-				"Successfully retrieved 1 Remaja data",
-				remaja,
+				"Successfully retrieved 1 Generus data",
+				generus,
 				null,
 			);
 		} catch (error) {
-			console.error("Error retrieving Remaja:", error);
+			console.error("Error retrieving Generus:", error);
 			throw error;
 		}
 	}
@@ -291,7 +291,7 @@ export class RemajaController {
 				},
 				jenjang: {
 					type: "string",
-					example: "Remaja",
+					example: "Generus",
 				},
 				alamat: {
 					type: "string",
@@ -313,7 +313,7 @@ export class RemajaController {
 		},
 	})
 	@ApiCreatedResponse({
-		description: "Successfully created a new Remaja",
+		description: "Successfully created a new Generus",
 		schema: {
 			type: "object",
 			properties: {
@@ -323,7 +323,7 @@ export class RemajaController {
 				},
 				message: {
 					type: "string",
-					example: "Successfully created a new Remaja",
+					example: "Successfully created a new Generus",
 				},
 				error: {
 					type: "string",
@@ -351,7 +351,7 @@ export class RemajaController {
 						},
 						jenjang: {
 							type: "string",
-							example: "Remaja",
+							example: "Generus",
 						},
 						role: {
 							type: "string",
@@ -372,7 +372,7 @@ export class RemajaController {
 	})
 	@ApiResponse({
 		status: 500,
-		description: "Failed to create a new Remaja",
+		description: "Failed to create a new Generus",
 		schema: {
 			type: "object",
 			properties: {
@@ -396,17 +396,17 @@ export class RemajaController {
 			},
 		},
 	})
-	async createRemaja(@Body() data: RemajaDto): Promise<RemajaResponse> {
+	async createGenerus(@Body() data: GenerusDto): Promise<GenerusResponse> {
 		try {
-			const createdRemaja = await this.remajaService.createUser(data);
+			const createdGenerus = await this.generusService.createUser(data);
 			return formatResponse(
 				true,
-				"Successfully created a new Remaja",
-				createdRemaja,
+				"Successfully created a new Generus",
+				createdGenerus,
 				null,
 			);
 		} catch (error) {
-			console.error("Error creating Remaja:", error);
+			console.error("Error creating Generus:", error);
 			if (error instanceof BadRequestException) {
 				return formatErrorResponse(error.message, error);
 			}
@@ -416,7 +416,7 @@ export class RemajaController {
 
 	@Delete("/:id")
 	@ApiOkResponse({
-		description: "Successfully deleted a Remaja",
+		description: "Successfully deleted a Generus",
 		schema: {
 			type: "object",
 			properties: {
@@ -426,7 +426,7 @@ export class RemajaController {
 				},
 				message: {
 					type: "string",
-					example: "Successfully deleted a Remaja",
+					example: "Successfully deleted a Generus",
 				},
 				error: {
 					type: "string",
@@ -454,7 +454,7 @@ export class RemajaController {
 						},
 						jenjang: {
 							type: "string",
-							example: "Remaja",
+							example: "Generus",
 						},
 						role: {
 							type: "string",
@@ -473,7 +473,7 @@ export class RemajaController {
 			},
 		},
 	})
-	async deleteRemaja(@Param("id") id: string): Promise<RemajaResponse> {
+	async deleteGenerus(@Param("id") id: string): Promise<GenerusResponse> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			return formatErrorResponse(
@@ -483,20 +483,20 @@ export class RemajaController {
 		}
 
 		try {
-			const deletedRemaja = await this.remajaService.deleteUser({
+			const deletedGenerus = await this.generusService.deleteUser({
 				id: numericId,
 			});
-			if (!deletedRemaja) {
-				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
+			if (!deletedGenerus) {
+				throw new NotFoundException(`Generus with ID ${numericId} not found.`);
 			}
 			return formatResponse(
 				true,
-				"Successfully deleted a Remaja",
-				deletedRemaja,
+				"Successfully deleted a Generus",
+				deletedGenerus,
 				null,
 			);
 		} catch (error) {
-			console.error("Error deleting Remaja:", error);
+			console.error("Error deleting Generus:", error);
 			if (
 				error instanceof NotFoundException ||
 				error instanceof BadRequestException
@@ -548,7 +548,7 @@ export class RemajaController {
 		},
 	})
 	@ApiOkResponse({
-		description: "Successfully updated a Remaja",
+		description: "Successfully updated a Generus",
 		schema: {
 			type: "object",
 			properties: {
@@ -558,7 +558,7 @@ export class RemajaController {
 				},
 				message: {
 					type: "string",
-					example: "Successfully updated a Remaja",
+					example: "Successfully updated a Generus",
 				},
 				error: {
 					type: "string",
@@ -586,7 +586,7 @@ export class RemajaController {
 						},
 						jenjang: {
 							type: "string",
-							example: "Remaja",
+							example: "Generus",
 						},
 						role: {
 							type: "string",
@@ -605,10 +605,10 @@ export class RemajaController {
 			},
 		},
 	})
-	async updateRemaja(
+	async updateGenerus(
 		@Param("id") id: string,
-		@Body() data: Prisma.RemajaUpdateInput,
-	): Promise<RemajaResponse> {
+		@Body() data: Prisma.GenerusUpdateInput,
+	): Promise<GenerusResponse> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			return formatErrorResponse(
@@ -625,23 +625,23 @@ export class RemajaController {
 		}
 
 		try {
-			const updatedRemaja = await this.remajaService.updateUser(
+			const updatedGenerus = await this.generusService.updateUser(
 				{ id: numericId },
 				data,
 			);
 
-			if (!updatedRemaja) {
-				throw new NotFoundException(`Remaja with ID ${numericId} not found.`);
+			if (!updatedGenerus) {
+				throw new NotFoundException(`Generus with ID ${numericId} not found.`);
 			}
 
 			return formatResponse(
 				true,
-				"Successfully updated a Remaja",
-				updatedRemaja,
+				"Successfully updated a Generus",
+				updatedGenerus,
 				null,
 			);
 		} catch (error) {
-			console.error("Error updating Remaja:", error);
+			console.error("Error updating Generus:", error);
 			if (
 				error instanceof NotFoundException ||
 				error instanceof BadRequestException

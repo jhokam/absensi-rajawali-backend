@@ -10,17 +10,15 @@ export class ProfileService {
 	}
 
 	async getUserProfile(userId: number) {
-		const user = await this.prisma.remaja.findUnique({
+		const user = await this.prisma.generus.findUnique({
 			where: { id: userId },
 			select: {
-				alamat: true,
+				alamat_tempat_tinggal: true,
 				id: true,
 				jenis_kelamin: true,
 				jenjang: true,
 				nama: true,
-				role: true,
 				sambung: true,
-				username: true,
 			},
 		});
 

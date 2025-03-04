@@ -54,7 +54,25 @@ enum Keterangan {
   Pribumi
 }
 
-model Remaja {
+model Desa {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  nama       String     @unique @db.VarChar(50)
+  kelompok   Kelompok[]
+}
+
+model Kelompok {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  nama       String    @unique @db.VarChar(50)
+  generus    Generus[]
+  desaId     Desa      @relation(fields: [desa_id], references: [id])
+  desa_id    Int
+}
+
+model Generus {
   id                       Int                @id @default(autoincrement())
   created_at               DateTime           @default(now())
   updated_at               DateTime           @updatedAt
@@ -71,9 +89,9 @@ model Remaja {
   alamat_tempat_tinggal    String             @db.VarChar(100)
   keterangan               Keterangan
   alamat_asal              String?            @db.VarChar(100)
-  kelompok_id              Kelompok           @relation(fields: [kelompokId], references: [id])
-  kelompokId               Int
-  User                     User?
+  kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
+  kelompok_id              Int
+  user                     User?
 }
 
 model User {
@@ -83,24 +101,6 @@ model User {
   username   String   @unique @db.VarChar(50)
   password   String   @db.VarChar(128)
   role       Role     @default(User)
-  Remaja     Remaja   @relation(fields: [remajaId], references: [id])
-  remajaId   Int      @unique
-}
-
-model Kelompok {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  nama       String   @unique @db.VarChar(50)
-  Remaja     Remaja[]
-  desa_id    Desa     @relation(fields: [desaId], references: [id])
-  desaId     Int
-}
-
-model Desa {
-  id         Int        @id @default(autoincrement())
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  nama       String     @unique @db.VarChar(50)
-  Kelompok   Kelompok[]
+  Generus    Generus  @relation(fields: [generus_id], references: [id])
+  generus_id Int      @unique
 }
