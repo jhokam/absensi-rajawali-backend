@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { Generus } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -10,12 +10,16 @@ export class UsersService {
 		this.prisma = prisma;
 	}
 
-	async findOne(username: string): Promise<Generus | null> {
-		return await this.prisma.generus.findUnique({
+	async findOne(username: string): Promise<User | null> {
+		return await this.prisma.user.findUnique({
 			where: {
 				id: Number.isNaN(Number(username)) ? undefined : Number(username),
-				nama: username,
+				username: username,
 			},
 		});
+	}
+
+	async getAllUsers(): Promise<User[]> {
+		return await this.prisma.user.findMany();
 	}
 }

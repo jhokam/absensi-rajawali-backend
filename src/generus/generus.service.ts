@@ -36,9 +36,7 @@ export class GenerusService {
 	async getAllUsers(): Promise<PublicGenerus[]> {
 		this.logger.log("getAllUsers");
 		try {
-			return await this.prisma.generus.findMany({
-				select: this.getGenerusSelect(),
-			});
+			return await this.prisma.generus.findMany();
 		} catch (error) {
 			this.logger.error(
 				`Error getting all users: ${error.message}`,
@@ -58,9 +56,14 @@ export class GenerusService {
 	async createUser(data: Prisma.GenerusCreateInput): Promise<PublicGenerus> {
 		try {
 			this.logger.log("createUser");
-			const hashedPassword = await hash(data.password);
+			// const hashedPassword = await hash(data.password);
+			// return await this.prisma.generus.create({
+			// 	data: { ...data, password: hashedPassword },
+			// 	select: this.getGenerusSelect(),
+			// });
+
 			return await this.prisma.generus.create({
-				data: { ...data, password: hashedPassword },
+				data: data,
 				select: this.getGenerusSelect(),
 			});
 		} catch (error) {
@@ -105,12 +108,18 @@ export class GenerusService {
 		return {
 			id: true,
 			nama: true,
-			alamat: true,
+			alamat_asal: true,
 			jenis_kelamin: true,
 			jenjang: true,
-			role: true,
 			sambung: true,
-			username: true,
+			alamat_tempat_tinggal: true,
+			keterangan: true,
+			nama_orang_tua: true,
+			nomer_whatsapp: true,
+			nomer_whatsapp_orang_tua: true,
+			pendidikan_terakhir: true,
+			tanggal_lahir: true,
+			tempat_lahir: true,
 		};
 	}
 }
