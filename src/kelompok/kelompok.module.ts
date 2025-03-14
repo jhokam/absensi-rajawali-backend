@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
-import { KelompokService } from './kelompok.service';
-import { KelompokController } from './kelompok.controller';
+import { Module } from "@nestjs/common";
+import { PrismaModule } from "../prisma/prisma.module";
+import { KelompokController } from "./kelompok.controller";
+import { KelompokService } from "./kelompok.service";
 
 @Module({
-  providers: [KelompokService],
-  controllers: [KelompokController]
+	imports: [PrismaModule],
+	providers: [KelompokService],
+	controllers: [KelompokController],
 })
 export class KelompokModule {}

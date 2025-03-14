@@ -19,7 +19,7 @@ import {
 	ApiOkResponse,
 	ApiResponse,
 } from "@nestjs/swagger";
-import type { Prisma } from "@prisma/client";
+import type { Generus, Prisma, User } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 import type { GenerusDto } from "src/dto/generus.dto";
 import {
@@ -27,11 +27,15 @@ import {
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
-import type { GenerusResponse, GenerusResponseArray } from "../types";
+import type {
+	GenerusResponse,
+	GenerusResponseArray,
+	PublicGenerus,
+} from "../types";
 import { GenerusService } from "./generus.service";
 
 @Controller("/generus")
-@UseGuards(AuthGuard, RolesGuard)
+// @UseGuards(AuthGuard, RolesGuard)
 export class GenerusController {
 	private readonly generusService: GenerusService;
 
@@ -396,7 +400,9 @@ export class GenerusController {
 			},
 		},
 	})
-	async createGenerus(@Body() data: GenerusDto): Promise<GenerusResponse> {
+	async createGenerus(
+		@Body() data: Prisma.GenerusCreateInput,
+	): Promise<GenerusResponse> {
 		try {
 			const createdGenerus = await this.generusService.createUser(data);
 			return formatResponse(
