@@ -1,4 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
+import type { PublicDesa } from "src/types";
 
 @Injectable()
-export class DesaService {}
+export class DesaService {
+	private readonly prisma: PrismaService;
+	private readonly logger = new Logger(DesaService.name);
+
+	constructor(prisma: PrismaService) {
+		this.prisma = prisma;
+	}
+
+	async getAllUsers(): Promise<PublicDesa[]> {
+		this.logger.log("getAllUsers");
+		try {
+			return await this.prisma.desa.findMany({
+				select: {
+					id: true,
+					nama: true,
+				},
+			});
+		} catch (error) {
+			this.logger.error(error);
+			throw new Error(error);
+		}
+	}
+}
