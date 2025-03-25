@@ -109,14 +109,13 @@ export class GenerusController {
 		try {
 			let data;
 
+			// Check if id is provided and is a valid number
 			if (id) {
 				if (!/^\d+$/.test(id)) {
 					throw new BadRequestException("Invalid ID format. Must be a number.");
 				}
-				// Fetch users where ID contains the provided number (e.g., searching "5" returns 5, 15, 25)
 				data = await this.generusService.getUsersByPartialId(id);
 			} else {
-				// Fetch all users if no ID is provided
 				data = await this.generusService.getAllUsers();
 			}
 

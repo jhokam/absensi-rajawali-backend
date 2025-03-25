@@ -63,17 +63,18 @@ model Desa {
 }
 
 model Kelompok {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(uuid())
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   nama       String    @unique @db.VarChar(50)
+  code       String    @unique @db.VarChar(3)
   generus    Generus[]
   desaId     Desa      @relation(fields: [desa_id], references: [id])
-  desa_id    Int       @unique
+  desa_id    Int
 }
 
 model Generus {
-  id                       Int                @id @default(autoincrement())
+  id                       String             @id @default(uuid())
   created_at               DateTime           @default(now())
   updated_at               DateTime           @updatedAt
   nama                     String             @db.VarChar(50)
@@ -90,17 +91,17 @@ model Generus {
   keterangan               Keterangan
   alamat_asal              String?            @db.VarChar(100)
   kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
-  kelompok_id              Int                @unique
+  kelompok_id              String             @unique
   user                     User?
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   username   String   @unique @db.VarChar(50)
   password   String   @db.VarChar(128)
   role       Role     @default(User)
   Generus    Generus  @relation(fields: [generus_id], references: [id])
-  generus_id Int      @unique
+  generus_id String   @unique
 }
