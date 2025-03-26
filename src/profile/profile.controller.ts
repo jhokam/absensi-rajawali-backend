@@ -17,7 +17,7 @@ import { ProfileService } from "./profile.service";
 
 interface RequestWithUser extends Request {
 	user: {
-		sub: number;
+		sub: string;
 		username: string;
 		role: string;
 	};

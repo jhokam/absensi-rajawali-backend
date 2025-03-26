@@ -21,17 +21,15 @@ import {
 } from "@nestjs/swagger";
 import type { Generus, Prisma, User } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
-import type { GenerusDto } from "src/dto/generus.dto";
+import {
+	GenerusResponseArrayDto,
+	GenerusResponseDto,
+} from "src/dto/generus.dto";
 import {
 	formatErrorResponse,
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
-import type {
-	GenerusResponse,
-	GenerusResponseArray,
-	PublicGenerus,
-} from "../types";
 import { GenerusService } from "./generus.service";
 
 @Controller("/generus")
@@ -105,7 +103,9 @@ export class GenerusController {
 			},
 		},
 	})
-	async getAllGenerus(@Query("id") id?: string): Promise<GenerusResponseArray> {
+	async getAllGenerus(
+		@Query("id") id?: string,
+	): Promise<GenerusResponseArrayDto> {
 		try {
 			let data;
 
@@ -252,7 +252,7 @@ export class GenerusController {
 			},
 		},
 	})
-	async getGenerusById(@Param("id") id: string): Promise<GenerusResponse> {
+	async getGenerusById(@Param("id") id: string): Promise<GenerusResponseDto> {
 		const numericId = Number(id);
 		if (Number.isNaN(numericId)) {
 			throw new BadRequestException("Invalid ID provided.");
@@ -401,7 +401,7 @@ export class GenerusController {
 	})
 	async createGenerus(
 		@Body() data: Prisma.GenerusCreateInput,
-	): Promise<GenerusResponse> {
+	): Promise<GenerusResponseDto> {
 		try {
 			const createdGenerus = await this.generusService.createUser(data);
 			return formatResponse(
@@ -478,21 +478,13 @@ export class GenerusController {
 			},
 		},
 	})
-	async deleteGenerus(@Param("id") id: string): Promise<GenerusResponse> {
-		const numericId = Number(id);
-		if (Number.isNaN(numericId)) {
-			return formatErrorResponse(
-				"Invalid ID provided.",
-				new BadRequestException("Invalid ID provided."),
-			);
-		}
-
+	async deleteGenerus(@Param("id") id: string): Promise<GenerusResponseDto> {
 		try {
 			const deletedGenerus = await this.generusService.deleteUser({
-				id: numericId,
+				id: id,
 			});
 			if (!deletedGenerus) {
-				throw new NotFoundException(`Generus with ID ${numericId} not found.`);
+				throw new NotFoundException(`Generus with ID ${id} not found.`);
 			}
 			return formatResponse(
 				true,
@@ -613,15 +605,7 @@ export class GenerusController {
 	async updateGenerus(
 		@Param("id") id: string,
 		@Body() data: Prisma.GenerusUpdateInput,
-	): Promise<GenerusResponse> {
-		const numericId = Number(id);
-		if (Number.isNaN(numericId)) {
-			return formatErrorResponse(
-				"Invalid ID provided.",
-				new BadRequestException("Invalid ID provided."),
-			);
-		}
-
+	): Promise<GenerusResponseDto> {
 		if (!data || Object.keys(data).length === 0) {
 			return formatErrorResponse(
 				"Update data cannot be empty.",
@@ -631,12 +615,12 @@ export class GenerusController {
 
 		try {
 			const updatedGenerus = await this.generusService.updateUser(
-				{ id: numericId },
+				{ id: id },
 				data,
 			);
 
 			if (!updatedGenerus) {
-				throw new NotFoundException(`Generus with ID ${numericId} not found.`);
+				throw new NotFoundException(`Generus with ID ${id} not found.`);
 			}
 
 			return formatResponse(

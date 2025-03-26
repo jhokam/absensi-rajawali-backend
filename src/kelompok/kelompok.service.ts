@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
+import type { PublicKelompokDto } from "src/dto/kelompok.dto";
 import { PrismaService } from "../prisma/prisma.service";
-import type { PublicKelompok } from "../types";
 
 @Injectable()
 export class KelompokService {
@@ -11,13 +11,14 @@ export class KelompokService {
 		this.prisma = prisma;
 	}
 
-	async getAllUsers(): Promise<PublicKelompok[]> {
+	async getAllUsers(): Promise<PublicKelompokDto[]> {
 		this.logger.log("getAllUsers");
 		try {
 			return await this.prisma.kelompok.findMany({
 				select: {
 					id: true,
 					nama: true,
+					code: true,
 					desa_id: true,
 				},
 			});

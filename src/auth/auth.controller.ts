@@ -4,6 +4,7 @@ import {
 	ApiOkResponse,
 	ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import type { AuthDto, AuthResponseDto } from "src/dto/auth.dto";
 import { formatResponse } from "src/helper/response.helper";
 import { AuthService } from "./auth.service";
 
@@ -116,11 +117,16 @@ export class AuthController {
 			},
 		},
 	})
-	async signIn(@Body() signInDto: Record<string, string>) {
+	async signIn(@Body() signInDto: AuthDto): Promise<AuthResponseDto> {
 		const result = await this.authService.signIn(
 			signInDto.username,
 			signInDto.password,
 		);
-		return formatResponse(true, "Login successful.", result, null);
+		return formatResponse(
+			true,
+			"Login successful.",
+			{ accessToken: result.access_token },
+			null,
+		);
 	}
 }

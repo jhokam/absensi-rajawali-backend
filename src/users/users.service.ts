@@ -13,7 +13,7 @@ export class UsersService {
 	async findOne(username: string): Promise<User | null> {
 		return await this.prisma.user.findUnique({
 			where: {
-				id: Number.isNaN(Number(username)) ? undefined : Number(username),
+				id: username,
 				username: username,
 			},
 		});

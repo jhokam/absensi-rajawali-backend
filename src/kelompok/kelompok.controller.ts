@@ -1,6 +1,7 @@
 import { Controller, Get, InternalServerErrorException } from "@nestjs/common";
 import { Res } from "@nestjs/common";
 import type { Response } from "express";
+import type { KelompokResponseArrayDto } from "src/dto/kelompok.dto";
 import {
 	formatErrorResponse,
 	formatResponse,
@@ -44,8 +45,7 @@ export class KelompokController {
 	}
 
 	@Get()
-	async getAllKelompok() {
-		// : Promise<KelompokResponseArray>
+	async getAllKelompok(): Promise<KelompokResponseArrayDto> {
 		try {
 			const data = await this.kelompokService.getAllUsers();
 

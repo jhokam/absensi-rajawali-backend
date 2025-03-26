@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "argon2";
 import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
@@ -159,7 +160,7 @@ async function main() {
 	await prisma.user.create({
 		data: {
 			username: "admin",
-			password: "admin",
+			password: await hash(process.env.USER_PASSWORD || "default_password"),
 			role: "Admin",
 			generus_id: generus.id,
 		},

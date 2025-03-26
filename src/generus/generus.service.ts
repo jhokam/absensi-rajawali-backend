@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { hash } from "argon2";
+import { PublicGenerusDto } from "src/dto/generus.dto";
 import { PrismaService } from "src/prisma/prisma.service";
-import type { PublicGenerus } from "../types";
 
 @Injectable()
 export class GenerusService {
@@ -13,12 +13,10 @@ export class GenerusService {
 		this.prisma = prisma;
 	}
 
-	private async findGenerus(searchTerm: string): Promise<PublicGenerus[]> {
+	private async findGenerus(searchTerm: string): Promise<PublicGenerusDto[]> {
 		try {
 			return await this.prisma.generus.findMany({
-				where: {
-					id: Number.isNaN(Number(searchTerm)) ? undefined : Number(searchTerm),
-				},
+				where: { id: searchTerm },
 				select: this.getGenerusSelect(),
 			});
 		} catch (error) {
@@ -27,13 +25,13 @@ export class GenerusService {
 		}
 	}
 
-	async getUserById(searchTerm: string): Promise<PublicGenerus | null> {
+	async getUserById(searchTerm: string): Promise<PublicGenerusDto | null> {
 		this.logger.log(`getUserById searchTerm: ${searchTerm}`);
 		const results = await this.findGenerus(searchTerm);
 		return results.length > 0 ? results[0] : null;
 	}
 
-	async getAllUsers(): Promise<PublicGenerus[]> {
+	async getAllUsers(): Promise<PublicGenerusDto[]> {
 		this.logger.log("getAllUsers");
 		try {
 			return await this.prisma.generus.findMany();
@@ -53,7 +51,7 @@ export class GenerusService {
 		return allUsers.filter((user) => user.id.toString().includes(id));
 	}
 
-	async createUser(data: Prisma.GenerusCreateInput): Promise<PublicGenerus> {
+	async createUser(data: Prisma.GenerusCreateInput): Promise<PublicGenerusDto> {
 		try {
 			this.logger.log("createUser");
 			// const hashedPassword = await hash(data.password);
@@ -75,7 +73,7 @@ export class GenerusService {
 	async updateUser(
 		where: Prisma.GenerusWhereUniqueInput,
 		data: Prisma.GenerusUpdateInput,
-	): Promise<PublicGenerus> {
+	): Promise<PublicGenerusDto> {
 		this.logger.log(`updateUser: ${JSON.stringify(where)}`);
 		try {
 			return await this.prisma.generus.update({
@@ -91,7 +89,7 @@ export class GenerusService {
 
 	async deleteUser(
 		where: Prisma.GenerusWhereUniqueInput,
-	): Promise<PublicGenerus> {
+	): Promise<PublicGenerusDto> {
 		try {
 			this.logger.log("deleteUser");
 			return await this.prisma.generus.delete({

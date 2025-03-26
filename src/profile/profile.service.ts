@@ -9,7 +9,7 @@ export class ProfileService {
 		this.prisma = prisma;
 	}
 
-	async getUserProfile(userId: number) {
+	async getUserProfile(userId: string) {
 		const user = await this.prisma.generus.findUnique({
 			where: { id: userId },
 			select: {

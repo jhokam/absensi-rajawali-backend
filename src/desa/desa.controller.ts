@@ -1,4 +1,5 @@
 import { Controller, Get } from "@nestjs/common";
+import type { DesaResponseArrayDto } from "src/dto/desa.dto";
 import {
 	formatErrorResponse,
 	formatResponse,
@@ -14,7 +15,7 @@ export class DesaController {
 	}
 
 	@Get()
-	async getAllDesa() {
+	async getAllDesa(): Promise<DesaResponseArrayDto> {
 		try {
 			const data = await this.desaService.getAllUsers();
 

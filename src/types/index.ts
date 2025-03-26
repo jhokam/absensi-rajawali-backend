@@ -25,11 +25,3 @@ export type ResponseBaseWithArray<T> = {
 	error: Error | null;
 	data: T[] | null;
 };
-
-export type PublicDesa = Omit<Desa, "created_at" | "updated_at">;
-export type PublicKelompok = Omit<Kelompok, "created_at" | "updated_at">;
-export type PublicGenerus = Omit<Generus, "created_at" | "updated_at">;
-export type PublicUser = Omit<User, "created_at" | "updated_at" | "password">;
-
-export type GenerusResponse = ResponseBase<PublicGenerus>;
-export type GenerusResponseArray = ResponseBaseWithArray<PublicGenerus>;
