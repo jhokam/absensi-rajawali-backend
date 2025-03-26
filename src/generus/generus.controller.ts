@@ -24,6 +24,7 @@ import { AuthGuard } from "src/auth/auth.guard";
 import {
 	GenerusResponseArrayDto,
 	GenerusResponseDto,
+	PublicGenerusDto,
 } from "src/dto/generus.dto";
 import {
 	formatErrorResponse,
@@ -107,13 +108,9 @@ export class GenerusController {
 		@Query("id") id?: string,
 	): Promise<GenerusResponseArrayDto> {
 		try {
-			let data;
+			let data: PublicGenerusDto[];
 
-			// Check if id is provided and is a valid number
 			if (id) {
-				if (!/^\d+$/.test(id)) {
-					throw new BadRequestException("Invalid ID format. Must be a number.");
-				}
 				data = await this.generusService.getUsersByPartialId(id);
 			} else {
 				data = await this.generusService.getAllUsers();
@@ -253,15 +250,10 @@ export class GenerusController {
 		},
 	})
 	async getGenerusById(@Param("id") id: string): Promise<GenerusResponseDto> {
-		const numericId = Number(id);
-		if (Number.isNaN(numericId)) {
-			throw new BadRequestException("Invalid ID provided.");
-		}
-
 		try {
 			const generus = await this.generusService.getUserById(id);
 			if (!generus) {
-				throw new NotFoundException(`Generus with ID ${numericId} not found.`);
+				throw new NotFoundException(`Generus with ID ${id} not found.`);
 			}
 			return formatResponse(
 				true,

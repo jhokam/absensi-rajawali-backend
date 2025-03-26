@@ -34,7 +34,9 @@ export class GenerusService {
 	async getAllUsers(): Promise<PublicGenerusDto[]> {
 		this.logger.log("getAllUsers");
 		try {
-			return await this.prisma.generus.findMany();
+			return await this.prisma.generus.findMany({
+				select: this.getGenerusSelect(),
+			});
 		} catch (error) {
 			this.logger.error(
 				`Error getting all users: ${error.message}`,
@@ -118,6 +120,8 @@ export class GenerusService {
 			pendidikan_terakhir: true,
 			tanggal_lahir: true,
 			tempat_lahir: true,
+			kelompok_id: true,
+			user: true,
 		};
 	}
 }
