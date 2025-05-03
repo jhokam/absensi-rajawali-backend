@@ -5,12 +5,12 @@ import { HttpExceptionFilter } from "./http-exception.filter";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
-
+	const port = process.env.PORT ?? 3000;
 	const config = new DocumentBuilder()
 		.setTitle("Website Rajawali")
 		.setDescription("API Documentation")
 		.setVersion("0.1")
-		.addServer("http://localhost:8080", "Local Environment")
+		.addServer(`http://localhost:${port}`, "Local Environment")
 		.addBearerAuth()
 		.build();
 	const documentFactory = () => SwaggerModule.createDocument(app, config);
@@ -19,6 +19,6 @@ async function bootstrap() {
 	app.setGlobalPrefix("api");
 	app.enableCors();
 	app.useGlobalFilters(new HttpExceptionFilter());
-	await app.listen(process.env.PORT ?? 3000);
+	await app.listen(port);
 }
 bootstrap();

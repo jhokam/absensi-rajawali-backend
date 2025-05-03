@@ -8,7 +8,7 @@ export class PublicDesaDto implements Omit<Desa, "created_at" | "updated_at"> {
 	@IsNumber()
 	id: number;
 
-	@ApiProperty({ example: "Desa Sukamaju" })
+	@ApiProperty({ example: "Sendang Mulyo" })
 	@IsString()
 	nama: string;
 }

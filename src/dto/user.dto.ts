@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import type { Role, User } from "@prisma/client";
-import { IsString } from "class-validator";
+import { Role, type User } from "@prisma/client";
+import { IsEnum, IsString } from "class-validator";
 
 export class PublicUserDto
 	implements Omit<User, "created_at" | "updated_at" | "password">
@@ -14,9 +14,10 @@ export class PublicUserDto
 	username: string;
 
 	@ApiProperty({ example: "User" })
+	@IsEnum(Role)
 	role: Role;
 
-	@ApiProperty({ example: "uuid" })
+	@ApiProperty({ example: "5e2154a7-683e-4ce4-82e5-2537743175b3" })
 	@IsString()
 	generus_id: string;
 }
