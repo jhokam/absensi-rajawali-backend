@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { User } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
+import { PublicUserDto } from "../dto/user.dto";
 
 @Injectable()
 export class UsersService {
@@ -13,13 +14,19 @@ export class UsersService {
 	async findOne(username: string): Promise<User | null> {
 		return await this.prisma.user.findUnique({
 			where: {
-				id: username,
 				username: username,
 			},
 		});
 	}
 
-	async getAllUsers(): Promise<User[]> {
-		return await this.prisma.user.findMany();
+	async getAllUsers(): Promise<PublicUserDto[]> {
+		return await this.prisma.user.findMany({
+			select: {
+				id: true,
+				username: true,
+				role: true,
+				generus_id: true,
+			},
+		});
 	}
 }

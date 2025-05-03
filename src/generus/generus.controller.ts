@@ -41,7 +41,7 @@ import { utils, write } from "xlsx";
 import { GenerusService } from "./generus.service";
 
 @Controller("/generus")
-// @UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class GenerusController {
 	private readonly generusService: GenerusService;
 
