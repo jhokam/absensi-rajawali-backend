@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import {
 	BadRequestException,
 	Body,
@@ -10,8 +11,12 @@ import {
 	Patch,
 	Post,
 	Query,
+	Res,
+	UploadedFile,
 	UseGuards,
+	UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import {
 	ApiBody,
 	ApiCreatedResponse,
@@ -20,8 +25,9 @@ import {
 	ApiResponse,
 } from "@nestjs/swagger";
 import type { Generus, Prisma, User } from "@prisma/client";
+import type { Response } from "express";
 import { AuthGuard } from "src/auth/auth.guard";
-import {
+import type {
 	GenerusResponseArrayDto,
 	GenerusResponseDto,
 	PublicGenerusDto,
@@ -31,6 +37,7 @@ import {
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
+import { utils, write } from "xlsx";
 import { GenerusService } from "./generus.service";
 
 @Controller("/generus")
@@ -128,6 +135,33 @@ export class GenerusController {
 				"Failed to retrieve Generus. Please try again later.",
 				new InternalServerErrorException("Failed to retrieve Generus."),
 			);
+		}
+	}
+
+	@Get("export")
+	async exportToExcel(@Res() res: Response) {
+		try {
+			const data = await this.generusService.getAllUsers();
+
+			const workbook = utils.book_new();
+			const worksheet = utils.json_to_sheet(data);
+			utils.book_append_sheet(workbook, worksheet, "Generus Data");
+
+			const excelBuffer = write(workbook, {
+				type: "buffer",
+				bookType: "xlsx",
+			});
+
+			res.set({
+				"Content-Type":
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Content-Disposition": 'attachment; filename="generus_data.xlsx"',
+				"Content-Length": excelBuffer.length,
+			});
+
+			return res.send(excelBuffer);
+		} catch (error) {
+			throw new InternalServerErrorException("Failed to generate Excel file");
 		}
 	}
 
