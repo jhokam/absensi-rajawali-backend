@@ -54,10 +54,14 @@ enum Keterangan {
   Pribumi
 }
 
+enum Status {
+  Hadir
+  Izin
+}
+
 model Desa {
   id         Int        @id @default(autoincrement())
   created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
   nama       String     @unique @db.VarChar(50)
   kelompok   Kelompok[]
 }
@@ -65,7 +69,6 @@ model Desa {
 model Kelompok {
   id         String    @id @default(uuid())
   created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
   nama       String    @unique @db.VarChar(50)
   code       String    @unique @db.VarChar(3)
   generus    Generus[]
@@ -87,12 +90,12 @@ model Generus {
   nama_orang_tua           String?            @db.VarChar(50)
   nomer_whatsapp_orang_tua String?            @db.VarChar(14)
   sambung                  Sambung            @default(Tidak_Aktif)
-  alamat_tempat_tinggal    String             @db.VarChar(100)
+  alamat_tempat_tinggal    String             @db.VarChar(255)
   keterangan               Keterangan
-  alamat_asal              String?            @db.VarChar(100)
+  alamat_asal              String?            @db.VarChar(255)
   kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
   kelompok_id              String             @unique
-  user                     User?
+  presention               Presention[]
 }
 
 model User {
@@ -102,6 +105,36 @@ model User {
   username   String   @unique @db.VarChar(50)
   password   String   @db.VarChar(128)
   role       Role     @default(User)
-  Generus    Generus  @relation(fields: [generus_id], references: [id])
+  log        Log[]
+}
+
+model Log {
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  event       String
+  description String
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     String
+}
+
+model Event {
+  id          String       @id @default(uuid())
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  title       String
+  start_date  DateTime
+  end_date    DateTime
+  location    String
+  description String
+  presention  Presention[]
+}
+
+model Presention {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  status     Status
+  eventId    Event    @relation(fields: [event_id], references: [id])
+  event_id   String   @unique
+  generusId  Generus  @relation(fields: [generus_id], references: [id])
   generus_id String   @unique
 }

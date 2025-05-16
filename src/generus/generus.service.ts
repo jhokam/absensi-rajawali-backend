@@ -47,9 +47,7 @@ export class GenerusService {
 	}
 
 	async getUsersByPartialId(id: string) {
-		const allUsers = await this.prisma.generus.findMany(); // Get all records
-
-		// Filter IDs that contain the search term (convert both to strings)
+		const allUsers = await this.prisma.generus.findMany();
 		return allUsers.filter((user) => user.id.toString().includes(id));
 	}
 

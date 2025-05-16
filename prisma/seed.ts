@@ -12,12 +12,15 @@ async function main() {
 	await prisma.desa.deleteMany();
 
 	// Create Desa
+	const desa = await prisma.desa.create({
+		data: {
+			id: 1,
+			nama: "Sendang Mulyo",
+		},
+	});
+
 	await prisma.desa.createMany({
 		data: [
-			{
-				id: 1,
-				nama: "Sendang Mulyo",
-			},
 			{
 				id: 2,
 				nama: "Kokosan",
@@ -46,91 +49,109 @@ async function main() {
 	await prisma.kelompok.createMany({
 		data: [
 			{
+				id: uuidv4(),
 				nama: "Sambiroto",
 				desa_id: 1,
 				code: "SRT",
 			},
 			{
+				id: uuidv4(),
 				nama: "Fatmawati",
 				desa_id: 1,
 				code: "FTM",
 			},
 			{
+				id: uuidv4(),
 				nama: "Zebra",
 				desa_id: 1,
 				code: "ZBR",
 			},
 			{
+				id: uuidv4(),
 				nama: "Kokosan",
 				desa_id: 2,
 				code: "KKS",
 			},
 			{
+				id: uuidv4(),
 				nama: "Sendang Guwo",
 				desa_id: 2,
 				code: "SGW",
 			},
 			{
+				id: uuidv4(),
 				nama: "Pancur Sari",
 				desa_id: 2,
 				code: "PSR",
 			},
 			{
+				id: uuidv4(),
 				nama: "Lamper Tengah",
 				desa_id: 2,
 				code: "LMP",
 			},
 			{
+				id: uuidv4(),
 				nama: "Kanguru",
 				desa_id: 3,
 				code: "KGR",
 			},
 			{
+				id: uuidv4(),
 				nama: "Karang Anyar",
 				desa_id: 3,
 				code: "KRA",
 			},
 			{
+				id: uuidv4(),
 				nama: "Pandansari",
 				desa_id: 3,
 				code: "PDS",
 			},
 			{
+				id: uuidv4(),
 				nama: "Sambirejo",
 				desa_id: 3,
 				code: "SRJ",
 			},
 			{
+				id: uuidv4(),
 				nama: "Menjangan",
 				desa_id: 4,
 				code: "MJG",
 			},
 			{
+				id: uuidv4(),
 				nama: "Graha Mukti",
 				desa_id: 4,
 				code: "GRH",
 			},
 			{
+				id: uuidv4(),
 				nama: "Ganesha",
 				desa_id: 4,
 				code: "GNS",
 			},
 			{
+				id: uuidv4(),
 				nama: "Banget Ayu",
 				desa_id: 4,
 				code: "BGA",
 			},
 			{
+				id: uuidv4(),
 				nama: "Genuk Indah",
 				desa_id: 4,
 				code: "BNK",
 			},
 			{
+				id: uuidv4(),
 				nama: "Muktiharjo",
 				desa_id: 4,
 				code: "MKT",
 			},
 			{
+				id: uuidv4(),
 				nama: "Syuhada",
 				desa_id: 4,
 				code: "SHD",
@@ -141,7 +162,7 @@ async function main() {
 	// Create Generus
 	const generus = await prisma.generus.create({
 		data: {
-			id: uuidv4(),
+			id: `${desa.id}-${kelompok.code}-0000`,
 			nama: "Admin Rajawali",
 			jenis_kelamin: "Laki_Laki",
 			tempat_lahir: "Jakarta",
