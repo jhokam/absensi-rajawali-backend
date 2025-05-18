@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { hash } from "argon2";
-import { PublicGenerusDto } from "src/dto/generus.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -13,7 +12,7 @@ export class GenerusService {
 		this.prisma = prisma;
 	}
 
-	private async findGenerus(searchTerm: string): Promise<PublicGenerusDto[]> {
+	private async findGenerus(searchTerm: string) {
 		try {
 			return await this.prisma.generus.findMany({
 				where: { id: searchTerm },
@@ -25,13 +24,13 @@ export class GenerusService {
 		}
 	}
 
-	async getUserById(searchTerm: string): Promise<PublicGenerusDto | null> {
+	async getUserById(searchTerm: string) {
 		this.logger.log(`getUserById searchTerm: ${searchTerm}`);
 		const results = await this.findGenerus(searchTerm);
 		return results.length > 0 ? results[0] : null;
 	}
 
-	async getAllUsers(): Promise<PublicGenerusDto[]> {
+	async getAllUsers() {
 		this.logger.log("getAllUsers");
 		try {
 			return await this.prisma.generus.findMany({
@@ -47,13 +46,14 @@ export class GenerusService {
 	}
 
 	async getUsersByPartialId(id: string) {
+		this.logger.log(`Get user by id: ${id}`);
 		const allUsers = await this.prisma.generus.findMany();
 		return allUsers.filter((user) => user.id.toString().includes(id));
 	}
 
-	async createUser(data: Prisma.GenerusCreateInput): Promise<PublicGenerusDto> {
+	async createUser(data: Prisma.GenerusCreateInput) {
 		try {
-			this.logger.log("createUser");
+			this.logger.log(`createUser ${data.id}`);
 			// const hashedPassword = await hash(data.password);
 			// return await this.prisma.generus.create({
 			// 	data: { ...data, password: hashedPassword },
@@ -73,8 +73,8 @@ export class GenerusService {
 	async updateUser(
 		where: Prisma.GenerusWhereUniqueInput,
 		data: Prisma.GenerusUpdateInput,
-	): Promise<PublicGenerusDto> {
-		this.logger.log(`updateUser: ${JSON.stringify(where)}`);
+	) {
+		this.logger.log(`updateUser: ${where.id}`);
 		try {
 			return await this.prisma.generus.update({
 				where,
@@ -87,11 +87,9 @@ export class GenerusService {
 		}
 	}
 
-	async deleteUser(
-		where: Prisma.GenerusWhereUniqueInput,
-	): Promise<PublicGenerusDto> {
+	async deleteUser(where: Prisma.GenerusWhereUniqueInput) {
 		try {
-			this.logger.log("deleteUser");
+			this.logger.log(`deleteUser: ${where.id}`);
 			return await this.prisma.generus.delete({
 				where,
 				select: this.getGenerusSelect(),
@@ -119,7 +117,6 @@ export class GenerusService {
 			tanggal_lahir: true,
 			tempat_lahir: true,
 			kelompok_id: true,
-			user: true,
 		};
 	}
 }

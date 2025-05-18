@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import {
 	BadRequestException,
 	Body,
@@ -24,14 +23,9 @@ import {
 	ApiOkResponse,
 	ApiResponse,
 } from "@nestjs/swagger";
-import type { Generus, Prisma, User } from "@prisma/client";
+import type { Generus, Prisma } from "@prisma/client";
 import type { Response } from "express";
 import { AuthGuard } from "src/auth/auth.guard";
-import type {
-	GenerusResponseArrayDto,
-	GenerusResponseDto,
-	PublicGenerusDto,
-} from "src/dto/generus.dto";
 import {
 	formatErrorResponse,
 	formatResponse,
@@ -111,11 +105,9 @@ export class GenerusController {
 			},
 		},
 	})
-	async getAllGenerus(
-		@Query("id") id?: string,
-	): Promise<GenerusResponseArrayDto> {
+	async getAllGenerus(@Query("id") id?: string) {
 		try {
-			let data: PublicGenerusDto[];
+			let data: Generus[];
 
 			if (id) {
 				data = await this.generusService.getUsersByPartialId(id);
@@ -283,7 +275,7 @@ export class GenerusController {
 			},
 		},
 	})
-	async getGenerusById(@Param("id") id: string): Promise<GenerusResponseDto> {
+	async getGenerusById(@Param("id") id: string) {
 		try {
 			const generus = await this.generusService.getUserById(id);
 			if (!generus) {
@@ -425,9 +417,7 @@ export class GenerusController {
 			},
 		},
 	})
-	async createGenerus(
-		@Body() data: Prisma.GenerusCreateInput,
-	): Promise<GenerusResponseDto> {
+	async createGenerus(@Body() data: Prisma.GenerusCreateInput) {
 		try {
 			const createdGenerus = await this.generusService.createUser(data);
 			return formatResponse(
@@ -504,7 +494,7 @@ export class GenerusController {
 			},
 		},
 	})
-	async deleteGenerus(@Param("id") id: string): Promise<GenerusResponseDto> {
+	async deleteGenerus(@Param("id") id: string) {
 		try {
 			const deletedGenerus = await this.generusService.deleteUser({
 				id: id,
@@ -631,7 +621,7 @@ export class GenerusController {
 	async updateGenerus(
 		@Param("id") id: string,
 		@Body() data: Prisma.GenerusUpdateInput,
-	): Promise<GenerusResponseDto> {
+	) {
 		if (!data || Object.keys(data).length === 0) {
 			return formatErrorResponse(
 				"Update data cannot be empty.",

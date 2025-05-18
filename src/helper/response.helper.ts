@@ -4,7 +4,7 @@ export function formatResponse<T>(
 	success: boolean,
 	message: string,
 	data: T | null,
-	error: any | null = null,
+	error: Error | null,
 ): ResponseBase<T> {
 	return {
 		success,
@@ -16,7 +16,7 @@ export function formatResponse<T>(
 
 export function formatErrorResponse(
 	message: string,
-	error: any = null,
+	error: Error | null,
 ): ResponseBase<null> {
 	const errorResponse =
 		error instanceof Error

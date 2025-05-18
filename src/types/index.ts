@@ -1,5 +1,3 @@
-import type { Desa, Generus, Kelompok, User } from "@prisma/client";
-
 export type ErrorResponse = {
 	response: {
 		message: string;

@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import type { PublicDesaDto } from "src/dto/desa.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -11,7 +10,7 @@ export class DesaService {
 		this.prisma = prisma;
 	}
 
-	async getAllUsers(): Promise<PublicDesaDto[]> {
+	async getAllUsers() {
 		this.logger.log("getAllUsers");
 		try {
 			return await this.prisma.desa.findMany({

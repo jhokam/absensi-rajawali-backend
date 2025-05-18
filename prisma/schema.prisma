@@ -5,7 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/client"
+  runtime  = "bun"
 }
 
 datasource db {
@@ -125,16 +127,17 @@ model Event {
   start_date  DateTime
   end_date    DateTime
   location    String
-  description String
+  description String?
   presention  Presention[]
 }
 
 model Presention {
-  id         String   @id @default(uuid())
-  created_at DateTime @default(now())
-  status     Status
-  eventId    Event    @relation(fields: [event_id], references: [id])
-  event_id   String   @unique
-  generusId  Generus  @relation(fields: [generus_id], references: [id])
-  generus_id String   @unique
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  status      Status
+  description String?
+  eventId     Event    @relation(fields: [event_id], references: [id])
+  event_id    String   @unique
+  generusId   Generus  @relation(fields: [generus_id], references: [id])
+  generus_id  String   @unique
 }

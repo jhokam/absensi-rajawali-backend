@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "argon2";
-import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
 
@@ -39,7 +38,6 @@ async function main() {
 	// Create Kelompok
 	const kelompok = await prisma.kelompok.create({
 		data: {
-			id: uuidv4(),
 			nama: "Sendang Mulyo",
 			desa_id: 1,
 			code: "SML",
@@ -49,109 +47,91 @@ async function main() {
 	await prisma.kelompok.createMany({
 		data: [
 			{
-				id: uuidv4(),
 				nama: "Sambiroto",
 				desa_id: 1,
 				code: "SRT",
 			},
 			{
-				id: uuidv4(),
 				nama: "Fatmawati",
 				desa_id: 1,
 				code: "FTM",
 			},
 			{
-				id: uuidv4(),
 				nama: "Zebra",
 				desa_id: 1,
 				code: "ZBR",
 			},
 			{
-				id: uuidv4(),
 				nama: "Kokosan",
 				desa_id: 2,
 				code: "KKS",
 			},
 			{
-				id: uuidv4(),
 				nama: "Sendang Guwo",
 				desa_id: 2,
 				code: "SGW",
 			},
 			{
-				id: uuidv4(),
 				nama: "Pancur Sari",
 				desa_id: 2,
 				code: "PSR",
 			},
 			{
-				id: uuidv4(),
 				nama: "Lamper Tengah",
 				desa_id: 2,
 				code: "LMP",
 			},
 			{
-				id: uuidv4(),
 				nama: "Kanguru",
 				desa_id: 3,
 				code: "KGR",
 			},
 			{
-				id: uuidv4(),
 				nama: "Karang Anyar",
 				desa_id: 3,
 				code: "KRA",
 			},
 			{
-				id: uuidv4(),
 				nama: "Pandansari",
 				desa_id: 3,
 				code: "PDS",
 			},
 			{
-				id: uuidv4(),
 				nama: "Sambirejo",
 				desa_id: 3,
 				code: "SRJ",
 			},
 			{
-				id: uuidv4(),
 				nama: "Menjangan",
 				desa_id: 4,
 				code: "MJG",
 			},
 			{
-				id: uuidv4(),
 				nama: "Graha Mukti",
 				desa_id: 4,
 				code: "GRH",
 			},
 			{
-				id: uuidv4(),
 				nama: "Ganesha",
 				desa_id: 4,
 				code: "GNS",
 			},
 			{
-				id: uuidv4(),
 				nama: "Banget Ayu",
 				desa_id: 4,
 				code: "BGA",
 			},
 			{
-				id: uuidv4(),
 				nama: "Genuk Indah",
 				desa_id: 4,
 				code: "BNK",
 			},
 			{
-				id: uuidv4(),
 				nama: "Muktiharjo",
 				desa_id: 4,
 				code: "MKT",
 			},
 			{
-				id: uuidv4(),
 				nama: "Syuhada",
 				desa_id: 4,
 				code: "SHD",
@@ -181,12 +161,38 @@ async function main() {
 	});
 
 	// Create User
-	await prisma.user.create({
+	const user = await prisma.user.create({
 		data: {
 			username: "admin",
 			password: await hash(process.env.USER_PASSWORD || "default_password"),
 			role: "Admin",
+		},
+	});
+
+	// Create Event
+	const event = await prisma.event.create({
+		data: {
+			title: "muda-mudi November 2006",
+			description: "muda-mudi November 2006",
+			start_date: new Date("2021-01-01"),
+			end_date: new Date("2021-01-01"),
+			location: "Jakarta",
+		},
+	});
+
+	await prisma.presention.create({
+		data: {
+			status: "Hadir",
+			event_id: event.id,
 			generus_id: generus.id,
+		},
+	});
+
+	await prisma.log.create({
+		data: {
+			description: "Berhasil login",
+			event: "Login",
+			user_id: user.id,
 		},
 	});
 }
