@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { formatErrorResponse } from "../helper/response.helper";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -26,7 +27,7 @@ export class LogService {
 				`Error getting all users: ${error.message}`,
 				error.stack,
 			);
-			throw new Error("Failed to retrieve users.");
+			formatErrorResponse("Internal Server Error", error);
 		}
 	}
 }

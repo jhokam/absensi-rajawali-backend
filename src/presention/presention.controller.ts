@@ -12,21 +12,12 @@ export class PresentionController {
 
 	@Get()
 	async getAllLogs() {
-		try {
-			const data = await this.presentionService.getAllLogs();
-			return formatResponse(
-				true,
-				"Berhasil mendapatkan semua Presention data",
-				data,
-				null,
-			);
-		} catch (error) {
-			return formatErrorResponse(
-				"Failed to retrieve all Presention data",
-				new InternalServerErrorException(
-					"Failed to retrieve all Presention data",
-				),
-			);
-		}
+		const data = await this.presentionService.getAllLogs();
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan semua Presention data",
+			data,
+			null,
+		);
 	}
 }

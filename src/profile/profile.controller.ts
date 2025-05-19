@@ -217,10 +217,6 @@ export class ProfileController {
 			},
 		});
 
-		if (!user) {
-			throw new NotFoundException("User not found");
-		}
-
 		return formatResponse(true, "Profile retrieved successfully", user, null);
 	}
 }

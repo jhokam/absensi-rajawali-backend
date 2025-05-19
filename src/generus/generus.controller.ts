@@ -106,28 +106,20 @@ export class GenerusController {
 		},
 	})
 	async getAllGenerus(@Query("id") id?: string) {
-		try {
-			let data: Generus[];
+		let data: Generus[];
 
-			if (id) {
-				data = await this.generusService.getUsersByPartialId(id);
-			} else {
-				data = await this.generusService.getAllUsers();
-			}
-
-			return formatResponse(
-				true,
-				"Successfully retrieved Generus data",
-				data,
-				null,
-			);
-		} catch (error) {
-			console.error("Error retrieving Generus:", error);
-			return formatErrorResponse(
-				"Failed to retrieve Generus. Please try again later.",
-				new InternalServerErrorException("Failed to retrieve Generus."),
-			);
+		if (id) {
+			data = await this.generusService.getUsersByPartialId(id);
+		} else {
+			data = await this.generusService.getAllUsers();
 		}
+
+		return formatResponse(
+			true,
+			"Successfully retrieved Generus data",
+			data,
+			null,
+		);
 	}
 
 	@Get("export")
@@ -276,21 +268,16 @@ export class GenerusController {
 		},
 	})
 	async getGenerusById(@Param("id") id: string) {
-		try {
-			const generus = await this.generusService.getUserById(id);
-			if (!generus) {
-				throw new NotFoundException(`Generus with ID ${id} not found.`);
-			}
-			return formatResponse(
-				true,
-				"Successfully retrieved 1 Generus data",
-				generus,
-				null,
-			);
-		} catch (error) {
-			console.error("Error retrieving Generus:", error);
-			throw error;
+		const generus = await this.generusService.getUserById(id);
+		if (!generus) {
+			throw new NotFoundException(`Generus with ID ${id} not found.`);
 		}
+		return formatResponse(
+			true,
+			"Successfully retrieved 1 Generus data",
+			generus,
+			null,
+		);
 	}
 
 	@Post()
@@ -418,21 +405,13 @@ export class GenerusController {
 		},
 	})
 	async createGenerus(@Body() data: Prisma.GenerusCreateInput) {
-		try {
-			const createdGenerus = await this.generusService.createUser(data);
-			return formatResponse(
-				true,
-				"Successfully created a new Generus",
-				createdGenerus,
-				null,
-			);
-		} catch (error) {
-			console.error("Error creating Generus:", error);
-			if (error instanceof BadRequestException) {
-				return formatErrorResponse(error.message, error);
-			}
-			throw error;
-		}
+		const createdGenerus = await this.generusService.createUser(data);
+		return formatResponse(
+			true,
+			"Successfully created a new Generus",
+			createdGenerus,
+			null,
+		);
 	}
 
 	@Delete("/:id")
@@ -495,29 +474,18 @@ export class GenerusController {
 		},
 	})
 	async deleteGenerus(@Param("id") id: string) {
-		try {
-			const deletedGenerus = await this.generusService.deleteUser({
-				id: id,
-			});
-			if (!deletedGenerus) {
-				throw new NotFoundException(`Generus with ID ${id} not found.`);
-			}
-			return formatResponse(
-				true,
-				"Successfully deleted a Generus",
-				deletedGenerus,
-				null,
-			);
-		} catch (error) {
-			console.error("Error deleting Generus:", error);
-			if (
-				error instanceof NotFoundException ||
-				error instanceof BadRequestException
-			) {
-				return formatErrorResponse(error.message, error);
-			}
-			throw error;
+		const deletedGenerus = await this.generusService.deleteUser({
+			id: id,
+		});
+		if (!deletedGenerus) {
+			throw new NotFoundException(`Generus with ID ${id} not found.`);
 		}
+		return formatResponse(
+			true,
+			"Successfully deleted a Generus",
+			deletedGenerus,
+			null,
+		);
 	}
 
 	@Patch("/:id")
@@ -629,31 +597,20 @@ export class GenerusController {
 			);
 		}
 
-		try {
-			const updatedGenerus = await this.generusService.updateUser(
-				{ id: id },
-				data,
-			);
+		const updatedGenerus = await this.generusService.updateUser(
+			{ id: id },
+			data,
+		);
 
-			if (!updatedGenerus) {
-				throw new NotFoundException(`Generus with ID ${id} not found.`);
-			}
-
-			return formatResponse(
-				true,
-				"Successfully updated a Generus",
-				updatedGenerus,
-				null,
-			);
-		} catch (error) {
-			console.error("Error updating Generus:", error);
-			if (
-				error instanceof NotFoundException ||
-				error instanceof BadRequestException
-			) {
-				return formatErrorResponse(error.message, error);
-			}
-			throw error;
+		if (!updatedGenerus) {
+			throw new NotFoundException(`Generus with ID ${id} not found.`);
 		}
+
+		return formatResponse(
+			true,
+			"Successfully updated a Generus",
+			updatedGenerus,
+			null,
+		);
 	}
 }

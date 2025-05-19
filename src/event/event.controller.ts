@@ -12,19 +12,12 @@ export class EventController {
 
 	@Get()
 	async getAllLogs() {
-		try {
-			const data = await this.eventService.getAllLogs();
-			return formatResponse(
-				true,
-				"Berhasil mendapatkan semua Event data",
-				data,
-				null,
-			);
-		} catch (error) {
-			return formatErrorResponse(
-				"Failed to retrieve all Event data",
-				new InternalServerErrorException("Failed to retrieve all Event data"),
-			);
-		}
+		const data = await this.eventService.getAllLogs();
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan semua Event data",
+			data,
+			null,
+		);
 	}
 }

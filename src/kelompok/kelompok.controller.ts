@@ -1,8 +1,5 @@
-import { Controller, Get, InternalServerErrorException } from "@nestjs/common";
-import {
-	formatErrorResponse,
-	formatResponse,
-} from "src/helper/response.helper";
+import { Controller, Get } from "@nestjs/common";
+import { formatResponse } from "src/helper/response.helper";
 import { KelompokService } from "./kelompok.service";
 
 @Controller("kelompok")
@@ -15,21 +12,13 @@ export class KelompokController {
 
 	@Get()
 	async getAllKelompok() {
-		try {
-			const data = await this.kelompokService.getAllUsers();
+		const data = await this.kelompokService.getAllUsers();
 
-			return formatResponse(
-				true,
-				"Successfully retrieved Kelompok data",
-				data,
-				null,
-			);
-		} catch (error) {
-			console.error("Error retrieving Kelompok:", error);
-			return formatErrorResponse(
-				"Failed to retrieve Kelompok. Please try again later.",
-				new InternalServerErrorException("Failed to retrieve Kelompok."),
-			);
-		}
+		return formatResponse(
+			true,
+			"Successfully retrieved Kelompok data",
+			data,
+			null,
+		);
 	}
 }

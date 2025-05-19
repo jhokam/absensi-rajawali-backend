@@ -53,12 +53,8 @@ export class DesaController {
 		},
 	})
 	async getAllDesa() {
-		try {
-			const data = await this.desaService.getAllUsers();
+		const data = await this.desaService.getAllUsers();
 
-			return formatResponse(true, "Success get all Desa", data, null);
-		} catch (error) {
-			return formatErrorResponse("Failed to retrieve Desa", error);
-		}
+		return formatResponse(true, "Success get all Desa", data, null);
 	}
 }
