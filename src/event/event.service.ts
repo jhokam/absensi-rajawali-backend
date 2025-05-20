@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { formatErrorResponse } from "../helper/response.helper";
 import { PrismaService } from "../prisma/prisma.service";
+import type { EventDto } from "./event.dto";
 
 @Injectable()
 export class EventService {
@@ -11,25 +11,48 @@ export class EventService {
 		this.prisma = prisma;
 	}
 
-	async getAllLogs() {
-		this.logger.log("getAllLogs");
-		try {
-			return await this.prisma.event.findMany({
-				select: {
-					id: true,
-					description: true,
-					start_date: true,
-					end_date: true,
-					location: true,
-					title: true,
-				},
-			});
-		} catch (error) {
-			this.logger.error(
-				`Error getting all users: ${error.message}`,
-				error.stack,
-			);
-			formatErrorResponse("Internal Server Error", error);
-		}
+	async getAllEvents() {
+		this.logger.log("Get all Events");
+		return await this.prisma.event.findMany();
+	}
+
+	async searchEvents(searchQuery: string) {
+		this.logger.log(`Search Event: ${searchQuery}`);
+		return await this.prisma.event.findMany({
+			where: { title: { contains: searchQuery } },
+		});
+	}
+
+	async getEventById(id: string) {
+		this.logger.log(`Get Event by ID: ${id}`);
+		return await this.prisma.event.findUnique({
+			where: { id },
+		});
+	}
+
+	async createEvent(data: EventDto) {
+		this.logger.log(`Create Event: ${data.title}`);
+		return await this.prisma.event.create({
+			data,
+		});
+	}
+
+	async updateEvent(id: string, data: EventDto) {
+		this.logger.log(`Update Event: ${id}`);
+		return await this.prisma.event.update({
+			where: {
+				id,
+			},
+			data,
+		});
+	}
+
+	async deleteEvent(id: string) {
+		this.logger.log(`Delete Event: ${id}`);
+		return await this.prisma.event.delete({
+			where: {
+				id,
+			},
+		});
 	}
 }
