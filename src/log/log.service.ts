@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { formatErrorResponse } from "../helper/response.helper";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -12,22 +11,27 @@ export class LogService {
 	}
 
 	async getAllLogs() {
-		this.logger.log("getAllLogs");
-		try {
-			return await this.prisma.log.findMany({
-				select: {
-					id: true,
-					event: true,
-					description: true,
-					user_id: true,
+		this.logger.log("Get all Logs");
+		return await this.prisma.log.findMany();
+	}
+
+	async searchLogs(searchQuery: string) {
+		this.logger.log(`Search Logs: ${searchQuery}`);
+		return await this.prisma.log.findMany({
+			where: {
+				event: {
+					contains: searchQuery,
 				},
-			});
-		} catch (error) {
-			this.logger.error(
-				`Error getting all users: ${error.message}`,
-				error.stack,
-			);
-			formatErrorResponse("Internal Server Error", error);
-		}
+			},
+		});
+	}
+
+	async getLogById(id: string) {
+		this.logger.log(`Get Log by ID: ${id}`);
+		return await this.prisma.log.findUnique({
+			where: {
+				id: id,
+			},
+		});
 	}
 }
