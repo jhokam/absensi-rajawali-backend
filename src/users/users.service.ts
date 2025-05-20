@@ -14,16 +14,13 @@ export class UsersService {
 			where: {
 				username: username,
 			},
+			omit: {
+				password: false,
+			},
 		});
 	}
 
 	async getAllUsers() {
-		return await this.prisma.user.findMany({
-			select: {
-				id: true,
-				username: true,
-				role: true,
-			},
-		});
+		return await this.prisma.user.findMany();
 	}
 }

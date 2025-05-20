@@ -1,3 +1,4 @@
+import { log } from "console";
 import {
 	type ArgumentsHost,
 	Catch,
@@ -17,8 +18,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
 				? exception.getStatus()
 				: HttpStatus.INTERNAL_SERVER_ERROR;
 
+		// Handle nested validation error messages
+		const message = exception.response?.message || exception.message;
+		const formattedMessage = Array.isArray(message)
+			? message.join(", ")
+			: message;
+
+		log(exception);
 		return response
 			.status(status)
-			.json(formatErrorResponse(exception.message, exception));
+			.json(formatErrorResponse(formattedMessage, exception));
 	}
 }

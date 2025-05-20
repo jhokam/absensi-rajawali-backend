@@ -1,9 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiOkResponse } from "@nestjs/swagger";
-import {
-	formatErrorResponse,
-	formatResponse,
-} from "src/helper/response.helper";
+import { formatResponse } from "src/helper/response.helper";
 import { DesaService } from "./desa.service";
 
 @Controller("desa")
@@ -55,6 +52,11 @@ export class DesaController {
 	async getAllDesa() {
 		const data = await this.desaService.getAllUsers();
 
-		return formatResponse(true, "Success get all Desa", data, null);
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan semua data Desa",
+			data,
+			null,
+		);
 	}
 }

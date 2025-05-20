@@ -12,14 +12,6 @@ export class ProfileService {
 	async getUserProfile(userId: string) {
 		const user = await this.prisma.generus.findUnique({
 			where: { id: userId },
-			select: {
-				alamat_tempat_tinggal: true,
-				id: true,
-				jenis_kelamin: true,
-				jenjang: true,
-				nama: true,
-				sambung: true,
-			},
 		});
 
 		if (!user) {

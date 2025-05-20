@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { formatErrorResponse } from "../helper/response.helper";
 
 @Injectable()
 export class DesaService {
@@ -12,17 +11,7 @@ export class DesaService {
 	}
 
 	async getAllUsers() {
-		this.logger.log("getAllUsers");
-		try {
-			return await this.prisma.desa.findMany({
-				select: {
-					id: true,
-					nama: true,
-				},
-			});
-		} catch (error) {
-			this.logger.error(error);
-			formatErrorResponse("Internal Server Error", error);
-		}
+		this.logger.log("Get all Desa");
+		return await this.prisma.desa.findMany();
 	}
 }

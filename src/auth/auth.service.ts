@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { verify } from "argon2";
 import { UsersService } from "../users/users.service";
@@ -7,6 +7,7 @@ import { UsersService } from "../users/users.service";
 export class AuthService {
 	private usersService: UsersService;
 	private jwtService: JwtService;
+	private logger = new Logger(AuthService.name);
 
 	constructor(usersService: UsersService, jwtService: JwtService) {
 		this.usersService = usersService;
@@ -14,30 +15,27 @@ export class AuthService {
 	}
 
 	async signIn(username: string, pass: string) {
-		try {
-			const user = await this.usersService.findOne(username);
-
-			if (!user) {
-				throw new UnauthorizedException("Invalid credentials");
-			}
-
-			const isPasswordValid = await verify(user.password, pass);
-
-			if (!isPasswordValid) {
-				throw new UnauthorizedException("Invalid credentials");
-			}
-
-			const payload = {
-				sub: user.id,
-				username: user.username,
-				role: user.role,
-			};
-			return {
-				access_token: await this.jwtService.signAsync(payload),
-			};
-		} catch (error) {
-			console.error("Error during sign-in:", error);
-			throw error;
+		const user = await this.usersService.findOne(username);
+		const message = "Username atau Password salah";
+		if (!user) {
+			this.logger.error(message);
+			throw new UnauthorizedException(message);
 		}
+
+		const isPasswordValid = await verify(user.password, pass);
+
+		if (!isPasswordValid) {
+			throw new UnauthorizedException(message);
+		}
+
+		const payload = {
+			sub: user.id,
+			username: user.username,
+			role: user.role,
+		};
+		this.logger.log(`User Login: ${username}`);
+		return {
+			access_token: await this.jwtService.signAsync(payload),
+		};
 	}
 }
