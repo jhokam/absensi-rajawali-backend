@@ -4,7 +4,6 @@ import {
 	Controller,
 	Delete,
 	Get,
-	InternalServerErrorException,
 	NotFoundException,
 	Param,
 	Patch,
@@ -15,7 +14,6 @@ import {
 	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
 import {
 	ApiBody,
 	ApiCreatedResponse,
@@ -23,7 +21,6 @@ import {
 	ApiOkResponse,
 	ApiResponse,
 } from "@nestjs/swagger";
-import type { Generus, Prisma } from "@prisma/client";
 import type { Response } from "express";
 import { AuthGuard } from "src/auth/auth.guard";
 import {
@@ -31,7 +28,8 @@ import {
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
-import { utils, write } from "xlsx";
+import type { GenerusDto } from "./generus.dto";
+import type { GenerusEntity } from "./generus.entity";
 import { GenerusService } from "./generus.service";
 
 @Controller("/generus")
@@ -105,51 +103,28 @@ export class GenerusController {
 			},
 		},
 	})
-	async getAllGenerus(@Query("id") id?: string) {
-		let data: Generus[];
+	async getAllGenerus(@Query("q") q: string) {
+		let data: GenerusEntity[];
+		let message: string;
 
-		if (id) {
-			data = await this.generusService.getUsersByPartialId(id);
+		if (q) {
+			data = await this.generusService.searchGenerus(q);
+			message = "Successfully retrieved 1 Generus data";
 		} else {
-			data = await this.generusService.getAllUsers();
+			data = await this.generusService.getAllGenerus();
+			message = "Successfully retrieved all Generus data";
 		}
 
-		return formatResponse(
-			true,
-			"Successfully retrieved Generus data",
-			data,
-			null,
-		);
+		return formatResponse(true, message, data, null);
 	}
 
 	@Get("export")
 	async exportToExcel(@Res() res: Response) {
-		try {
-			const data = await this.generusService.getAllUsers();
-
-			const workbook = utils.book_new();
-			const worksheet = utils.json_to_sheet(data);
-			utils.book_append_sheet(workbook, worksheet, "Generus Data");
-
-			const excelBuffer = write(workbook, {
-				type: "buffer",
-				bookType: "xlsx",
-			});
-
-			res.set({
-				"Content-Type":
-					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-				"Content-Disposition": 'attachment; filename="generus_data.xlsx"',
-				"Content-Length": excelBuffer.length,
-			});
-
-			return res.send(excelBuffer);
-		} catch (error) {
-			throw new InternalServerErrorException("Failed to generate Excel file");
-		}
+		const data = await this.generusService.getAllGenerus();
+		return await this.generusService.exportGenerus(res, data);
 	}
 
-	@Get("/:id")
+	@Get(":id")
 	@ApiOkResponse({
 		description: "Successfully retrieved 1 Generus data",
 		schema: {
@@ -268,10 +243,7 @@ export class GenerusController {
 		},
 	})
 	async getGenerusById(@Param("id") id: string) {
-		const generus = await this.generusService.getUserById(id);
-		if (!generus) {
-			throw new NotFoundException(`Generus with ID ${id} not found.`);
-		}
+		const generus = await this.generusService.getGenerusById(id);
 		return formatResponse(
 			true,
 			"Successfully retrieved 1 Generus data",
@@ -404,91 +376,17 @@ export class GenerusController {
 			},
 		},
 	})
-	async createGenerus(@Body() data: Prisma.GenerusCreateInput) {
-		const createdGenerus = await this.generusService.createUser(data);
+	async createGenerus(@Body() input: GenerusDto) {
+		const data = await this.generusService.createGenerus(input);
 		return formatResponse(
 			true,
 			"Successfully created a new Generus",
-			createdGenerus,
+			data,
 			null,
 		);
 	}
 
-	@Delete("/:id")
-	@ApiOkResponse({
-		description: "Successfully deleted a Generus",
-		schema: {
-			type: "object",
-			properties: {
-				success: {
-					type: "boolean",
-					example: true,
-				},
-				message: {
-					type: "string",
-					example: "Successfully deleted a Generus",
-				},
-				error: {
-					type: "string",
-					nullable: true,
-					example: null,
-				},
-				data: {
-					type: "object",
-					properties: {
-						id: {
-							type: "integer",
-							example: 1,
-						},
-						nama: {
-							type: "string",
-							example: "Jane Doe",
-						},
-						alamat: {
-							type: "string",
-							example: "Jl. Sendangsari Utara XV No. 27",
-						},
-						jenis_kelamin: {
-							type: "string",
-							example: "Laki_Laki",
-						},
-						jenjang: {
-							type: "string",
-							example: "Generus",
-						},
-						role: {
-							type: "string",
-							example: "User",
-						},
-						sambung: {
-							type: "string",
-							example: "Aktif",
-						},
-						username: {
-							type: "string",
-							example: "abdul",
-						},
-					},
-				},
-			},
-		},
-	})
-	async deleteGenerus(@Param("id") id: string) {
-		const deletedGenerus = await this.generusService.deleteUser({
-			id: id,
-		});
-		if (!deletedGenerus) {
-			throw new NotFoundException(`Generus with ID ${id} not found.`);
-		}
-		return formatResponse(
-			true,
-			"Successfully deleted a Generus",
-			deletedGenerus,
-			null,
-		);
-	}
-
-	@Patch("/:id")
+	@Patch(":id")
 	@ApiBody({
 		schema: {
 			type: "object",
@@ -586,21 +484,15 @@ export class GenerusController {
 			},
 		},
 	})
-	async updateGenerus(
-		@Param("id") id: string,
-		@Body() data: Prisma.GenerusUpdateInput,
-	) {
-		if (!data || Object.keys(data).length === 0) {
+	async updateGenerus(@Param("id") id: string, @Body() input: GenerusDto) {
+		if (!input || Object.keys(input).length === 0) {
 			return formatErrorResponse(
-				"Update data cannot be empty.",
-				new BadRequestException("Update data cannot be empty."),
+				"Update input cannot be empty.",
+				new BadRequestException("Update input cannot be empty."),
 			);
 		}
 
-		const updatedGenerus = await this.generusService.updateUser(
-			{ id: id },
-			data,
-		);
+		const updatedGenerus = await this.generusService.updateGenerus(id, input);
 
 		if (!updatedGenerus) {
 			throw new NotFoundException(`Generus with ID ${id} not found.`);
@@ -612,5 +504,72 @@ export class GenerusController {
 			updatedGenerus,
 			null,
 		);
+	}
+
+	@Delete(":id")
+	@ApiOkResponse({
+		description: "Successfully deleted a Generus",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+				},
+				message: {
+					type: "string",
+					example: "Successfully deleted a Generus",
+				},
+				error: {
+					type: "string",
+					nullable: true,
+					example: null,
+				},
+				data: {
+					type: "object",
+					properties: {
+						id: {
+							type: "integer",
+							example: 1,
+						},
+						nama: {
+							type: "string",
+							example: "Jane Doe",
+						},
+						alamat: {
+							type: "string",
+							example: "Jl. Sendangsari Utara XV No. 27",
+						},
+						jenis_kelamin: {
+							type: "string",
+							example: "Laki_Laki",
+						},
+						jenjang: {
+							type: "string",
+							example: "Generus",
+						},
+						role: {
+							type: "string",
+							example: "User",
+						},
+						sambung: {
+							type: "string",
+							example: "Aktif",
+						},
+						username: {
+							type: "string",
+							example: "abdul",
+						},
+					},
+				},
+			},
+		},
+	})
+	async deleteGenerus(@Param("id") id: string) {
+		const data = await this.generusService.deleteGenerus(id);
+		if (!data) {
+			throw new NotFoundException(`Generus with ID ${id} not found.`);
+		}
+		return formatResponse(true, "Successfully deleted a Generus", data, null);
 	}
 }
