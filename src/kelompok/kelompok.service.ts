@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { formatErrorResponse } from "../helper/response.helper";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -11,23 +10,29 @@ export class KelompokService {
 		this.prisma = prisma;
 	}
 
-	async getAllUsers() {
-		this.logger.log("getAllUsers");
-		try {
-			return await this.prisma.kelompok.findMany({
-				select: {
-					id: true,
-					nama: true,
-					code: true,
-					desa_id: true,
+	async getAllKelompok() {
+		this.logger.log("Get all Kelompok");
+		return await this.prisma.kelompok.findMany();
+	}
+
+	async searchKelompok(searchQuery: string) {
+		this.logger.log(`Search Kelompok: ${searchQuery}`);
+		return await this.prisma.kelompok.findMany({
+			where: {
+				nama: {
+					contains: searchQuery,
+					mode: "insensitive",
 				},
-			});
-		} catch (error) {
-			this.logger.error(
-				`Error getting all users: ${error.message}`,
-				error.stack,
-			);
-			formatErrorResponse("Internal Server Error", error);
-		}
+			},
+		});
+	}
+
+	async getKelompokById(id: string) {
+		this.logger.log(`Get Kelompok: ${id}`);
+		return await this.prisma.kelompok.findUnique({
+			where: {
+				id,
+			},
+		});
 	}
 }
