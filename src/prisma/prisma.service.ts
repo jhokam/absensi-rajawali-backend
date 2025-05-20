@@ -1,5 +1,5 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/client";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -25,13 +25,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 					created_at: true,
 					updated_at: true,
 				},
-				presention: {
+				presence: {
 					created_at: true,
 				},
 				log: {
 					created_at: true,
 				},
 			},
+			datasourceUrl: process.env.DATABASE_URL,
 		});
 	}
 

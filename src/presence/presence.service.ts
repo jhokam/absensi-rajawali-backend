@@ -12,7 +12,7 @@ export class PresenceService {
 
 	async getAllPresences() {
 		this.logger.log("Get all Presence");
-		return await this.prisma.presention.findMany();
+		return await this.prisma.presence.findMany();
 	}
 
 	// async getPresence

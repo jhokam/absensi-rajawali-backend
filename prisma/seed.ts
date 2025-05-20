@@ -1,16 +1,19 @@
-import { PrismaClient } from "@prisma/client";
 import { hash } from "argon2";
+import { PrismaClient } from "../src/generated/client";
+import "dotenv/config";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
 
 async function main() {
-	// Clean database
+	console.info("Seeding database...");
+	await prisma.log.deleteMany();
 	await prisma.user.deleteMany();
+	await prisma.presence.deleteMany();
+	await prisma.event.deleteMany();
 	await prisma.generus.deleteMany();
 	await prisma.kelompok.deleteMany();
 	await prisma.desa.deleteMany();
 
-	// Create Desa
 	const desa = await prisma.desa.create({
 		data: {
 			id: 1,
@@ -35,114 +38,112 @@ async function main() {
 		],
 	});
 
-	// Create Kelompok
 	const kelompok = await prisma.kelompok.create({
 		data: {
+			id: "SML",
 			nama: "Sendang Mulyo",
 			desa_id: 1,
-			code: "SML",
 		},
 	});
 
 	await prisma.kelompok.createMany({
 		data: [
 			{
+				id: "SRT",
 				nama: "Sambiroto",
 				desa_id: 1,
-				code: "SRT",
 			},
 			{
+				id: "FTM",
 				nama: "Fatmawati",
 				desa_id: 1,
-				code: "FTM",
 			},
 			{
+				id: "ZBR",
 				nama: "Zebra",
 				desa_id: 1,
-				code: "ZBR",
 			},
 			{
+				id: "KKS",
 				nama: "Kokosan",
 				desa_id: 2,
-				code: "KKS",
 			},
 			{
+				id: "SGW",
 				nama: "Sendang Guwo",
 				desa_id: 2,
-				code: "SGW",
 			},
 			{
+				id: "PSR",
 				nama: "Pancur Sari",
 				desa_id: 2,
-				code: "PSR",
 			},
 			{
+				id: "LMP",
 				nama: "Lamper Tengah",
 				desa_id: 2,
-				code: "LMP",
 			},
 			{
+				id: "KGR",
 				nama: "Kanguru",
 				desa_id: 3,
-				code: "KGR",
 			},
 			{
+				id: "KRA",
 				nama: "Karang Anyar",
 				desa_id: 3,
-				code: "KRA",
 			},
 			{
+				id: "PDS",
 				nama: "Pandansari",
 				desa_id: 3,
-				code: "PDS",
 			},
 			{
+				id: "SRJ",
 				nama: "Sambirejo",
 				desa_id: 3,
-				code: "SRJ",
 			},
 			{
+				id: "MJG",
 				nama: "Menjangan",
 				desa_id: 4,
-				code: "MJG",
 			},
 			{
+				id: "GRH",
 				nama: "Graha Mukti",
 				desa_id: 4,
-				code: "GRH",
 			},
 			{
+				id: "GNS",
 				nama: "Ganesha",
 				desa_id: 4,
-				code: "GNS",
 			},
 			{
+				id: "BGA",
 				nama: "Banget Ayu",
 				desa_id: 4,
-				code: "BGA",
 			},
 			{
+				id: "BNK",
 				nama: "Genuk Indah",
 				desa_id: 4,
-				code: "BNK",
 			},
 			{
+				id: "MKT",
 				nama: "Muktiharjo",
 				desa_id: 4,
-				code: "MKT",
 			},
 			{
+				id: "SHD",
 				nama: "Syuhada",
 				desa_id: 4,
-				code: "SHD",
 			},
 		],
 	});
 
-	// Create Generus
 	const generus = await prisma.generus.create({
 		data: {
-			id: `${desa.id}-${kelompok.code}-0000`,
+			id: `${desa.id}-${kelompok.id}-0000`,
 			nama: "Admin Rajawali",
 			jenis_kelamin: "Laki_Laki",
 			tempat_lahir: "Jakarta",
@@ -160,7 +161,6 @@ async function main() {
 		},
 	});
 
-	// Create User
 	const user = await prisma.user.create({
 		data: {
 			username: "admin",
@@ -169,7 +169,6 @@ async function main() {
 		},
 	});
 
-	// Create Event
 	const event = await prisma.event.create({
 		data: {
 			title: "muda-mudi November 2006",
@@ -195,9 +194,8 @@ async function main() {
 			user_id: user.id,
 		},
 	});
+	console.log("Database has been seeded");
 }
-
-console.log("Database has been seeded");
 
 main()
 	.catch((e) => {

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/client"
@@ -13,6 +7,86 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Desa {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  nama       String     @unique @db.VarChar(50)
+  kelompok   Kelompok[]
+}
+
+model Kelompok {
+  id         String   @id @db.VarChar(3)
+  created_at DateTime @default(now())
+  nama       String   @unique @db.VarChar(50)
+  generus    Generus?
+  desa_id    Int
+  desaId     Desa     @relation(fields: [desa_id], references: [id])
+}
+
+model Generus {
+  id                       String             @id @default(uuid())
+  created_at               DateTime           @default(now())
+  updated_at               DateTime           @updatedAt
+  nama                     String             @db.VarChar(50)
+  jenis_kelamin            JenisKelamin
+  tempat_lahir             String?            @db.VarChar(32)
+  tanggal_lahir            DateTime           @db.Date
+  jenjang                  Jenjang
+  nomer_whatsapp           String?            @db.VarChar(14)
+  pendidikan_terakhir      PendidikanTerakhir
+  nama_orang_tua           String?            @db.VarChar(50)
+  nomer_whatsapp_orang_tua String?            @db.VarChar(14)
+  sambung                  Sambung            @default(Tidak_Aktif)
+  alamat_tempat_tinggal    String             @db.VarChar(255)
+  keterangan               Keterangan
+  alamat_asal              String?            @db.VarChar(255)
+  kelompok_id              String             @unique
+  kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
+  presence                 Presence[]
+}
+
+model User {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  username   String   @unique @db.VarChar(50)
+  password   String   @db.VarChar(128)
+  role       Role     @default(User)
+  log        Log[]
+}
+
+model Log {
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  event       String
+  description String
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id])
+}
+
+model Event {
+  id          String     @id @default(uuid())
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  title       String     @unique
+  start_date  DateTime
+  end_date    DateTime
+  location    String
+  description String?
+  presence    Presence[]
+}
+
+model Presence {
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  status      Status
+  description String?
+  event_id    String
+  eventId     Event    @relation(fields: [event_id], references: [id])
+  generus_id  String
+  generusId   Generus  @relation(fields: [generus_id], references: [id])
 }
 
 enum JenisKelamin {
@@ -59,85 +133,4 @@ enum Keterangan {
 enum Status {
   Hadir
   Izin
-}
-
-model Desa {
-  id         Int        @id @default(autoincrement())
-  created_at DateTime   @default(now())
-  nama       String     @unique @db.VarChar(50)
-  kelompok   Kelompok[]
-}
-
-model Kelompok {
-  id         String    @id @default(uuid())
-  created_at DateTime  @default(now())
-  nama       String    @unique @db.VarChar(50)
-  code       String    @unique @db.VarChar(3)
-  generus    Generus[]
-  desaId     Desa      @relation(fields: [desa_id], references: [id])
-  desa_id    Int       @unique
-}
-
-model Generus {
-  id                       String             @id @default(uuid())
-  created_at               DateTime           @default(now())
-  updated_at               DateTime           @updatedAt
-  nama                     String             @db.VarChar(50)
-  jenis_kelamin            JenisKelamin
-  tempat_lahir             String?            @db.VarChar(32)
-  tanggal_lahir            DateTime           @db.Date
-  jenjang                  Jenjang
-  nomer_whatsapp           String?            @db.VarChar(14)
-  pendidikan_terakhir      PendidikanTerakhir
-  nama_orang_tua           String?            @db.VarChar(50)
-  nomer_whatsapp_orang_tua String?            @db.VarChar(14)
-  sambung                  Sambung            @default(Tidak_Aktif)
-  alamat_tempat_tinggal    String             @db.VarChar(255)
-  keterangan               Keterangan
-  alamat_asal              String?            @db.VarChar(255)
-  kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
-  kelompok_id              String             @unique
-  presence                 Presence[]
-}
-
-model User {
-  id         String   @id @default(uuid())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  username   String   @unique @db.VarChar(50)
-  password   String   @db.VarChar(128)
-  role       Role     @default(User)
-  log        Log[]
-}
-
-model Log {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  event       String
-  description String
-  user        User     @relation(fields: [user_id], references: [id])
-  user_id     String   @unique
-}
-
-model Event {
-  id          String     @id @default(uuid())
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-  title       String     @unique
-  start_date  DateTime
-  end_date    DateTime
-  location    String
-  description String?
-  presence    Presence[]
-}
-
-model Presence {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  status      Status
-  description String?
-  eventId     Event    @relation(fields: [event_id], references: [id])
-  event_id    String   @unique
-  generusId   Generus  @relation(fields: [generus_id], references: [id])
-  generus_id  String   @unique
 }
