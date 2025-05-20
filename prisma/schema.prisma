@@ -75,7 +75,7 @@ model Kelompok {
   code       String    @unique @db.VarChar(3)
   generus    Generus[]
   desaId     Desa      @relation(fields: [desa_id], references: [id])
-  desa_id    Int
+  desa_id    Int       @unique
 }
 
 model Generus {
@@ -97,7 +97,7 @@ model Generus {
   alamat_asal              String?            @db.VarChar(255)
   kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
   kelompok_id              String             @unique
-  presention               Presention[]
+  presence                 Presence[]
 }
 
 model User {
@@ -116,22 +116,22 @@ model Log {
   event       String
   description String
   user        User     @relation(fields: [user_id], references: [id])
-  user_id     String
+  user_id     String   @unique
 }
 
 model Event {
-  id          String       @id @default(uuid())
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
-  title       String
+  id          String     @id @default(uuid())
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  title       String     @unique
   start_date  DateTime
   end_date    DateTime
   location    String
   description String?
-  presention  Presention[]
+  presence    Presence[]
 }
 
-model Presention {
+model Presence {
   id          String   @id @default(uuid())
   created_at  DateTime @default(now())
   status      Status

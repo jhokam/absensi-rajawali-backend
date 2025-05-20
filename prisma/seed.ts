@@ -180,7 +180,7 @@ async function main() {
 		},
 	});
 
-	await prisma.presention.create({
+	await prisma.presence.create({
 		data: {
 			status: "Hadir",
 			event_id: event.id,
