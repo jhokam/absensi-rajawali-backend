@@ -14,6 +14,4 @@ export class PresenceService {
 		this.logger.log("Get all Presence");
 		return await this.prisma.presence.findMany();
 	}
-
-	// async getPresence
 }

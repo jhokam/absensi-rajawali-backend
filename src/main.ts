@@ -1,4 +1,3 @@
-import { log } from "console";
 import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { NestFactory, Reflector } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -8,7 +7,6 @@ import { HttpExceptionFilter } from "./http-exception.filter";
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const port = process.env.PORT ?? 3000;
-	log(process.env.PORT);
 	const config = new DocumentBuilder()
 		.setTitle("Website Rajawali")
 		.setDescription("API Documentation")

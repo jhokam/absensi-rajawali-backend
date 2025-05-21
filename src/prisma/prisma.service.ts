@@ -1,5 +1,6 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "../generated/client";
+import "dotenv/config";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -33,6 +34,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 				},
 			},
 			datasourceUrl: process.env.DATABASE_URL,
+			errorFormat: "pretty",
 		});
 	}
 

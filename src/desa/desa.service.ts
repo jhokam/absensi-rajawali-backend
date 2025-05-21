@@ -14,4 +14,23 @@ export class DesaService {
 		this.logger.log("Get all Desa");
 		return await this.prisma.desa.findMany();
 	}
+
+	async searchDesa(searchQuery: string) {
+		this.logger.log(`Search Desa: ${searchQuery}`);
+		return await this.prisma.desa.findMany({
+			where: {
+				nama: {
+					contains: searchQuery,
+					mode: "insensitive",
+				},
+			},
+		});
+	}
+
+	async getDesaById(id: number) {
+		this.logger.log(`Get Desa by ID: ${id}`);
+		return await this.prisma.desa.findUnique({
+			where: { id },
+		});
+	}
 }
