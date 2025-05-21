@@ -28,5 +28,5 @@ export class EventEntity implements Event {
 	location: string;
 
 	@ApiProperty({ example: "muda-mudi", required: false })
-	description: string;
+	description: string | null;
 }

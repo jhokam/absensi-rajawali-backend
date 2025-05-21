@@ -8,6 +8,6 @@ export class DesaEntity implements Desa {
 	@ApiProperty()
 	created_at: Date;
 
-	@ApiProperty({ example: "Sendang Mulyo" })
+	@ApiProperty({ example: "Sendang Mulyo", maximum: 50 })
 	nama: string;
 }
