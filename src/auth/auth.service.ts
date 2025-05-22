@@ -25,6 +25,7 @@ export class AuthService {
 		const isPasswordValid = await verify(user.password, pass);
 
 		if (!isPasswordValid) {
+			this.logger.error(message);
 			throw new UnauthorizedException(message);
 		}
 

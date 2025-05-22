@@ -28,7 +28,7 @@ export class KelompokService {
 	}
 
 	async getKelompokById(id: string) {
-		this.logger.log(`Get Kelompok: ${id}`);
+		this.logger.log(`Get Kelompok by ID: ${id}`);
 		return await this.prisma.kelompok.findUnique({
 			where: {
 				id,
