@@ -6,8 +6,7 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"lineEnding": "crlf",
-		"ignore": ["node_modules", ".vscode"]
+		"lineEnding": "crlf"
 	},
 	"linter": {
 		"enabled": true,
@@ -20,7 +19,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": ["node_modules", ".vscode"]
+		"ignore": ["node_modules", ".vscode", "dist", "/src/generated"]
 	},
 	"javascript": {
 		"parser": {

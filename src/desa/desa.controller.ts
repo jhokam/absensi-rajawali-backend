@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ApiOkResponse } from "@nestjs/swagger";
+import { ApiOkResponse, ApiQuery } from "@nestjs/swagger";
 import { formatResponse } from "src/helper/response.helper";
 import type { DesaEntity } from "./desa.entity";
 import { DesaService } from "./desa.service";
@@ -50,19 +50,23 @@ export class DesaController {
 			},
 		},
 	})
-	async getAllDesa(@Query("q") searchQuery: string) {
+	@ApiQuery({
+		name: "q",
+		required: false,
+		type: String,
+		description: "Search Desa by Nama",
+		example: "Sendang Mulyo",
+	})
+	async getAllDesa(@Query("q") nama: string) {
 		let data: DesaEntity[];
-		let message: string;
 
-		if (searchQuery) {
-			data = await this.desaService.searchDesa(searchQuery);
-			message = `Berhasil mendapatkan data Desa dengan nama: ${searchQuery}`;
+		if (nama) {
+			data = await this.desaService.filterDesa(nama);
 		} else {
 			data = await this.desaService.getAllUsers();
-			message = "Berhasil mendapatkan semua data Desa";
 		}
 
-		return formatResponse(true, message, data, null);
+		return formatResponse(true, "Berhasil mendapatkan data Desa", data, null);
 	}
 
 	@Get(":id")

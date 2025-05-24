@@ -10,15 +10,14 @@ import {
 	Post,
 	Query,
 	Res,
-	UploadedFile,
 	UseGuards,
-	UseInterceptors,
 } from "@nestjs/common";
 import {
 	ApiBody,
 	ApiCreatedResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
+	ApiQuery,
 	ApiResponse,
 } from "@nestjs/swagger";
 import type { Response } from "express";
@@ -28,7 +27,10 @@ import {
 	formatResponse,
 } from "src/helper/response.helper";
 import { RolesGuard } from "src/roles/roles.guard";
-import type { GenerusDto } from "./generus.dto";
+import { Jenjang, Keterangan, PendidikanTerakhir } from "../generated/client";
+import { JenisKelamin } from "../generated/client/enums";
+import type { FilterGenerusDto } from "./dto/filter-generus.dto";
+import type { GenerusDto } from "./dto/generus.dto";
 import type { GenerusEntity } from "./generus.entity";
 import { GenerusService } from "./generus.service";
 
@@ -103,19 +105,73 @@ export class GenerusController {
 			},
 		},
 	})
-	async getAllGenerus(@Query("q") q: string) {
+	@ApiQuery({
+		name: "q",
+		required: false,
+		type: String,
+		description: "Search Generus by Name",
+		example: "Abdul Aziz",
+	})
+	@ApiQuery({
+		name: "jenis_kelamin",
+		required: false,
+		enum: JenisKelamin,
+		description: "Filter Generus by Name",
+	})
+	@ApiQuery({
+		name: "jenjang",
+		required: false,
+		enum: Jenjang,
+		description: "Filter Generus by Jenjang",
+	})
+	@ApiQuery({
+		name: "pendidikan_terakhir",
+		required: false,
+		enum: PendidikanTerakhir,
+		description: "Filter Generus by Pendidikan Terakhir",
+	})
+	@ApiQuery({
+		name: "sambung",
+		required: false,
+		enum: JenisKelamin,
+		description: "Filter Generus by Sambung",
+	})
+	@ApiQuery({
+		name: "keterangan",
+		required: false,
+		enum: Keterangan,
+		description: "Filter Generus by Keterangan",
+	})
+	async getAllGenerus(
+		@Query("q") nama?,
+		@Query("jenis_kelamin") jenis_kelamin?,
+		@Query("jenjang") jenjang?,
+		@Query("pendidikan_terakhir") pendidikan_terakhir?,
+		@Query("sambung") sambung?,
+		@Query("keterangan") keterangan?,
+	) {
+		const filterDto: FilterGenerusDto = {
+			nama,
+			jenis_kelamin,
+			jenjang,
+			pendidikan_terakhir,
+			sambung,
+			keterangan,
+		};
 		let data: GenerusEntity[];
-		let message: string;
 
-		if (q) {
-			data = await this.generusService.searchGenerus(q);
-			message = "Successfully retrieved 1 Generus data";
+		if (nama || jenis_kelamin || jenjang || sambung || keterangan) {
+			data = await this.generusService.filterGenerus(filterDto);
 		} else {
 			data = await this.generusService.getAllGenerus();
-			message = "Successfully retrieved all Generus data";
 		}
 
-		return formatResponse(true, message, data, null);
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan data Generus",
+			data,
+			null,
+		);
 	}
 
 	@Get("export")

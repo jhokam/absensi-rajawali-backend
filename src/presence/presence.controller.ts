@@ -15,7 +15,7 @@ export class PresenceController {
 		const data = await this.presenceService.getAllPresences();
 		return formatResponse(
 			true,
-			"Berhasil mendapatkan semua data Presence",
+			"Berhasil mendapatkan data Presence",
 			data,
 			null,
 		);

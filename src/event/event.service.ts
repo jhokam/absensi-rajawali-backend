@@ -16,10 +16,10 @@ export class EventService {
 		return await this.prisma.event.findMany();
 	}
 
-	async searchEvents(searchQuery: string) {
-		this.logger.log(`Search Event: ${searchQuery}`);
+	async filterEvents(title: string) {
+		this.logger.log(`Filter Event: ${title}`);
 		return await this.prisma.event.findMany({
-			where: { title: { contains: searchQuery } },
+			where: { title: { contains: title, mode: "insensitive" } },
 		});
 	}
 

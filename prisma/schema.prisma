@@ -14,15 +14,19 @@ model Desa {
   created_at DateTime   @default(now())
   nama       String     @unique @db.VarChar(50)
   kelompok   Kelompok[]
+
+  @@index([nama])
 }
 
 model Kelompok {
-  id         String   @id @db.VarChar(3)
-  created_at DateTime @default(now())
-  nama       String   @unique @db.VarChar(50)
-  generus    Generus?
+  id         String    @id @db.VarChar(3)
+  created_at DateTime  @default(now())
+  nama       String    @unique @db.VarChar(50)
+  generus    Generus[]
   desa_id    Int
-  desaId     Desa     @relation(fields: [desa_id], references: [id])
+  desaId     Desa      @relation(fields: [desa_id], references: [id])
+
+  @@index([nama])
 }
 
 model Generus {
@@ -42,9 +46,11 @@ model Generus {
   alamat_tempat_tinggal    String             @db.VarChar(255)
   keterangan               Keterangan
   alamat_asal              String?            @db.VarChar(255)
-  kelompok_id              String             @unique
+  kelompok_id              String
   kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
   presence                 Presence[]
+
+  @@index([nama, jenis_kelamin, jenjang, pendidikan_terakhir, sambung, keterangan])
 }
 
 model User {
@@ -55,6 +61,8 @@ model User {
   password   String   @db.VarChar(128)
   role       Role     @default(User)
   log        Log[]
+
+  @@index([username])
 }
 
 model Log {
@@ -76,6 +84,8 @@ model Event {
   location    String
   description String?
   presence    Presence[]
+
+  @@index([title])
 }
 
 model Presence {

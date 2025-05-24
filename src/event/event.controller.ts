@@ -8,7 +8,7 @@ import {
 	Post,
 	Query,
 } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOkResponse, ApiQuery } from "@nestjs/swagger";
 import { formatResponse } from "../helper/response.helper";
 import type { EventDto } from "./event.dto";
 import { EventEntity } from "./event.entity";
@@ -27,16 +27,23 @@ export class EventController {
 		type: EventEntity,
 		isArray: true,
 	})
-	async getAllEvents(@Query("q") searchQuery: string) {
+	@ApiQuery({
+		name: "q",
+		required: false,
+		type: String,
+		description: "Search Events by Title",
+		example: "Pengajian muda-mudi April 2025",
+	})
+	async getAllEvents(@Query("q") title: string) {
 		let data: EventEntity[];
 		let message: string;
 
-		if (searchQuery) {
-			data = await this.eventService.searchEvents(searchQuery);
-			message = `Berhasil mencari Event: ${searchQuery}`;
+		if (title) {
+			data = await this.eventService.filterEvents(title);
+			message = `Berhasil mencari Event: ${title}`;
 		} else {
 			data = await this.eventService.getAllEvents();
-			message = "Berhasil mendapatkan semua data Event";
+			message = "Berhasil mendapatkan data Event";
 		}
 		return formatResponse(true, message, data, null);
 	}

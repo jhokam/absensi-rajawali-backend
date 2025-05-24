@@ -1,15 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
-import { $Enums } from "../generated/client";
+import {
+	JenisKelamin,
+	Jenjang,
+	Keterangan,
+	PendidikanTerakhir,
+	Sambung,
+} from "../../generated/client";
 
 export class GenerusDto {
 	@IsString()
 	@ApiProperty({ example: "Abdul Aziz" })
 	nama: string;
 
-	@IsEnum($Enums.JenisKelamin)
-	@ApiProperty({ example: "", enum: $Enums.JenisKelamin })
-	jenis_kelamin: $Enums.JenisKelamin;
+	@IsEnum(JenisKelamin)
+	@ApiProperty({ example: "", enum: JenisKelamin })
+	jenis_kelamin: JenisKelamin;
 
 	@IsString()
 	@IsOptional()
@@ -20,18 +26,18 @@ export class GenerusDto {
 	@ApiProperty({})
 	tanggal_lahir: Date;
 
-	@IsEnum($Enums.Jenjang)
-	@ApiProperty({ example: "", enum: $Enums.Jenjang })
-	jenjang: $Enums.Jenjang;
+	@IsEnum(Jenjang)
+	@ApiProperty({ example: "", enum: Jenjang })
+	jenjang: Jenjang;
 
 	@IsString()
 	@IsOptional()
 	@ApiProperty({ example: "081234567890" })
 	nomer_whatsapp: string | null;
 
-	@IsEnum($Enums.PendidikanTerakhir)
-	@ApiProperty({ example: "", enum: $Enums.PendidikanTerakhir })
-	pendidikan_terakhir: $Enums.PendidikanTerakhir;
+	@IsEnum(PendidikanTerakhir)
+	@ApiProperty({ example: "", enum: PendidikanTerakhir })
+	pendidikan_terakhir: PendidikanTerakhir;
 
 	@IsString()
 	@IsOptional()
@@ -43,17 +49,17 @@ export class GenerusDto {
 	@ApiProperty({ example: "081234567891" })
 	nomer_whatsapp_orang_tua: string | null;
 
-	@IsEnum($Enums.Sambung)
-	@ApiProperty({ example: "", enum: $Enums.Sambung })
-	sambung: $Enums.Sambung;
+	@IsEnum(Sambung)
+	@ApiProperty({ example: "", enum: Sambung })
+	sambung: Sambung;
 
 	@IsString()
 	@ApiProperty({ example: "Jl. Admin Rajawali No. 1" })
 	alamat_tempat_tinggal: string;
 
-	@IsEnum($Enums.Keterangan)
-	@ApiProperty({ example: "", enum: $Enums.Keterangan })
-	keterangan: $Enums.Keterangan;
+	@IsEnum(Keterangan)
+	@ApiProperty({ example: "", enum: Keterangan })
+	keterangan: Keterangan;
 
 	@IsString()
 	@IsOptional()

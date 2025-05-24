@@ -15,14 +15,19 @@ export class KelompokService {
 		return await this.prisma.kelompok.findMany();
 	}
 
-	async searchKelompok(searchQuery: string) {
-		this.logger.log(`Search Kelompok: ${searchQuery}`);
+	async filterKelompok(nama, desa_id) {
+		this.logger.log(`Filter Kelompok: ${nama}`);
 		return await this.prisma.kelompok.findMany({
 			where: {
-				nama: {
-					contains: searchQuery,
-					mode: "insensitive",
-				},
+				OR: [
+					{
+						nama: {
+							contains: nama,
+							mode: "insensitive",
+						},
+					},
+					{ desa_id: desa_id },
+				],
 			},
 		});
 	}

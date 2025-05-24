@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
+import { ApiQuery } from "@nestjs/swagger";
 import { formatResponse } from "../helper/response.helper";
-import { LogEntity } from "./log.entity";
+import type { LogEntity } from "./log.entity";
 import { LogService } from "./log.service";
 
 @Controller("log")
@@ -12,6 +13,13 @@ export class LogController {
 	}
 
 	@Get()
+	@ApiQuery({
+		name: "q",
+		required: false,
+		type: String,
+		description: "Search Logs by Title",
+		example: "Berhasil Login",
+	})
 	async getAllLogs(@Query("q") searchQuery: string) {
 		let data: LogEntity[];
 		let message: string;
@@ -21,7 +29,7 @@ export class LogController {
 			message = `Berhasil mencari Logs: ${searchQuery}`;
 		} else {
 			data = await this.logService.getAllLogs();
-			message = "Berhasil mendapatkan semua data Logs";
+			message = "Berhasil mendapatkan data Logs";
 		}
 
 		return formatResponse(true, message, data, null);

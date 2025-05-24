@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { hash } from "argon2";
 import type { Response } from "express";
 import { PrismaService } from "src/prisma/prisma.service";
 import { utils, write } from "xlsx";
-import type { GenerusDto } from "./generus.dto";
+import type { FilterGenerusDto } from "./dto/filter-generus.dto";
+import type { GenerusDto } from "./dto/generus.dto";
 import type { GenerusEntity } from "./generus.entity";
 
 @Injectable()
@@ -20,10 +20,28 @@ export class GenerusService {
 		return await this.prisma.generus.findMany();
 	}
 
-	async searchGenerus(searchQuery: string) {
-		this.logger.log(`Search Generus: ${searchQuery}`);
+	async filterGenerus({
+		nama,
+		jenis_kelamin,
+		jenjang,
+		pendidikan_terakhir,
+		sambung,
+		keterangan,
+	}: FilterGenerusDto) {
+		this.logger.log(
+			`Get all Generus: ${nama}, ${jenis_kelamin}, ${jenjang}, ${pendidikan_terakhir}, ${sambung}, ${keterangan}`,
+		);
 		return await this.prisma.generus.findMany({
-			where: { nama: { contains: searchQuery } },
+			where: {
+				OR: [
+					{ nama: { contains: nama, mode: "insensitive" } },
+					{ jenis_kelamin: jenis_kelamin },
+					{ jenjang: jenjang },
+					{ pendidikan_terakhir: pendidikan_terakhir },
+					{ sambung: sambung },
+					{ keterangan: keterangan },
+				],
+			},
 		});
 	}
 
@@ -49,7 +67,7 @@ export class GenerusService {
 	}
 
 	async getGenerusById(id: string) {
-		this.logger.log(`Get Generus by id: ${id}`);
+		this.logger.log(`Get Generus by ID: ${id}`);
 		return await this.prisma.generus.findUnique({
 			where: { id },
 		});

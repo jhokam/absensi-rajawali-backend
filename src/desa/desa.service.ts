@@ -15,12 +15,12 @@ export class DesaService {
 		return await this.prisma.desa.findMany();
 	}
 
-	async searchDesa(searchQuery: string) {
-		this.logger.log(`Search Desa: ${searchQuery}`);
+	async filterDesa(nama: string) {
+		this.logger.log(`Filter Desa: ${nama}`);
 		return await this.prisma.desa.findMany({
 			where: {
 				nama: {
-					contains: searchQuery,
+					contains: nama,
 					mode: "insensitive",
 				},
 			},
