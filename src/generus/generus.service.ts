@@ -3,7 +3,7 @@ import type { Response } from "express";
 import { PrismaService } from "src/prisma/prisma.service";
 import { utils, write } from "xlsx";
 import type { FilterGenerusDto } from "./dto/filter-generus.dto";
-import type { GenerusDto } from "./dto/generus.dto";
+import { GenerusDto } from "./dto/generus.dto";
 import type { GenerusEntity } from "./generus.entity";
 
 @Injectable()
@@ -81,7 +81,7 @@ export class GenerusService {
 		// });
 
 		return await this.prisma.generus.create({
-			data: data,
+			data,
 		});
 	}
 

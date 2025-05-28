@@ -1,11 +1,11 @@
 import { hash } from "argon2";
 import { PrismaClient } from "../src/generated/client";
 import "dotenv/config";
+import { fakerID_ID } from "@faker-js/faker";
 
 const prisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
 
 async function main() {
-	console.info("Seeding database...");
 	await prisma.log.deleteMany();
 	await prisma.user.deleteMany();
 	await prisma.presence.deleteMany();
@@ -14,6 +14,7 @@ async function main() {
 	await prisma.kelompok.deleteMany();
 	await prisma.desa.deleteMany();
 
+	console.info("Seeding database...");
 	const desa = await prisma.desa.create({
 		data: {
 			id: 1,
@@ -143,20 +144,19 @@ async function main() {
 
 	const generus = await prisma.generus.create({
 		data: {
-			id: `${desa.id}-${kelompok.id}-0000`,
-			nama: "Admin Rajawali",
+			nama: fakerID_ID.person.fullName(),
 			jenis_kelamin: "Laki_Laki",
-			tempat_lahir: "Jakarta",
-			tanggal_lahir: new Date("1990-01-01"),
+			tempat_lahir: fakerID_ID.location.city(),
+			tanggal_lahir: fakerID_ID.date.birthdate(),
 			jenjang: "Remaja",
-			nomer_whatsapp: "081234567890",
+			nomer_whatsapp: fakerID_ID.phone.number({ style: "human" }),
 			pendidikan_terakhir: "SMA_SMK",
-			nama_orang_tua: "Orang Tua Admin Rajawali",
-			nomer_whatsapp_orang_tua: "081234567891",
+			nama_orang_tua: fakerID_ID.person.fullName(),
+			nomer_whatsapp_orang_tua: fakerID_ID.phone.number({ style: "human" }),
 			sambung: "Aktif",
-			alamat_tempat_tinggal: "Jl. Admin Rajawali No. 1",
+			alamat_tempat_tinggal: fakerID_ID.location.streetAddress(),
 			keterangan: "Pendatang",
-			alamat_asal: "Jl. Admin Rajawali No. 2",
+			alamat_asal: fakerID_ID.location.streetAddress(),
 			kelompok_id: kelompok.id,
 		},
 	});
@@ -173,9 +173,10 @@ async function main() {
 		data: {
 			title: "muda-mudi November 2006",
 			description: "muda-mudi November 2006",
-			start_date: new Date("2021-01-01"),
-			end_date: new Date("2021-01-01"),
-			location: "Jakarta",
+			start_date: fakerID_ID.date.recent(),
+			end_date: fakerID_ID.date.soon(),
+			latitude: fakerID_ID.location.latitude(),
+			longitude: fakerID_ID.location.longitude(),
 		},
 	});
 

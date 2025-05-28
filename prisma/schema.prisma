@@ -10,7 +10,7 @@ datasource db {
 }
 
 model Desa {
-  id         Int        @id @default(autoincrement())
+  id         Int        @id @default(autoincrement()) @db.SmallInt
   created_at DateTime   @default(now())
   nama       String     @unique @db.VarChar(50)
   kelompok   Kelompok[]
@@ -19,7 +19,7 @@ model Desa {
 }
 
 model Kelompok {
-  id         String    @id @db.VarChar(3)
+  id         String    @id @db.Char(3)
   created_at DateTime  @default(now())
   nama       String    @unique @db.VarChar(50)
   generus    Generus[]
@@ -30,23 +30,23 @@ model Kelompok {
 }
 
 model Generus {
-  id                       String             @id @default(uuid())
+  id                       String             @id @default(uuid()) @db.Uuid
   created_at               DateTime           @default(now())
   updated_at               DateTime           @updatedAt
-  nama                     String             @db.VarChar(50)
+  nama                     String             @db.VarChar(255)
   jenis_kelamin            JenisKelamin
-  tempat_lahir             String?            @db.VarChar(32)
+  tempat_lahir             String             @db.VarChar(50)
   tanggal_lahir            DateTime           @db.Date
   jenjang                  Jenjang
-  nomer_whatsapp           String?            @db.VarChar(14)
+  nomer_whatsapp           String?            @db.VarChar(15)
   pendidikan_terakhir      PendidikanTerakhir
-  nama_orang_tua           String?            @db.VarChar(50)
-  nomer_whatsapp_orang_tua String?            @db.VarChar(14)
+  nama_orang_tua           String?            @db.VarChar(255)
+  nomer_whatsapp_orang_tua String?            @db.VarChar(15)
   sambung                  Sambung            @default(Tidak_Aktif)
   alamat_tempat_tinggal    String             @db.VarChar(255)
   keterangan               Keterangan
   alamat_asal              String?            @db.VarChar(255)
-  kelompok_id              String
+  kelompok_id              String             @db.Char(3)
   kelompokId               Kelompok           @relation(fields: [kelompok_id], references: [id])
   presence                 Presence[]
 
@@ -54,7 +54,7 @@ model Generus {
 }
 
 model User {
-  id         String   @id @default(uuid())
+  id         String   @id @default(uuid()) @db.Uuid
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   username   String   @unique @db.VarChar(50)
@@ -66,22 +66,23 @@ model User {
 }
 
 model Log {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   created_at  DateTime @default(now())
-  event       String
+  event       String   @db.VarChar(255)
   description String
-  user_id     String
+  user_id     String   @db.Uuid
   user        User     @relation(fields: [user_id], references: [id])
 }
 
 model Event {
-  id          String     @id @default(uuid())
+  id          String     @id @default(uuid()) @db.Uuid
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
-  title       String     @unique
+  title       String     @unique @db.VarChar(255)
   start_date  DateTime
   end_date    DateTime
-  location    String
+  latitude    Float      @db.DoublePrecision
+  longitude   Float      @db.DoublePrecision
   description String?
   presence    Presence[]
 
@@ -89,14 +90,13 @@ model Event {
 }
 
 model Presence {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  status      Status
-  description String?
-  event_id    String
-  eventId     Event    @relation(fields: [event_id], references: [id])
-  generus_id  String
-  generusId   Generus  @relation(fields: [generus_id], references: [id])
+  id         String   @id @default(uuid()) @db.Uuid
+  created_at DateTime @default(now())
+  status     Status
+  event_id   String   @db.Uuid
+  eventId    Event    @relation(fields: [event_id], references: [id])
+  generus_id String   @db.Uuid
+  generusId  Generus  @relation(fields: [generus_id], references: [id])
 }
 
 enum JenisKelamin {

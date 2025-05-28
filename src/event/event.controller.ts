@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiQuery } from "@nestjs/swagger";
 import { formatResponse } from "../helper/response.helper";
-import type { EventDto } from "./event.dto";
+import { EventDto } from "./event.dto";
 import { EventEntity } from "./event.entity";
 import { EventService } from "./event.service";
 

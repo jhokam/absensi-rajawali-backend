@@ -27,11 +27,9 @@ export class GenerusEntity implements Generus {
 
 	@ApiProperty({
 		example: "Jakarta",
-		maximum: 32,
-		nullable: true,
-		required: false,
+		maximum: 50,
 	})
-	tempat_lahir: string | null;
+	tempat_lahir: string;
 
 	@ApiProperty({})
 	tanggal_lahir: Date;

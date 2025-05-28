@@ -1,44 +1,56 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import {
+	IsDate,
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsString,
+	MaxLength,
+} from "class-validator";
 
 export class EventDto {
 	@IsString()
 	@IsNotEmpty()
+	@MaxLength(255)
+	@Transform(({ value }) => value.trim())
 	@ApiProperty({
-		description: "The title of the event",
-		example: "Event Title",
+		example: "Muda Mudi April 2025",
+		maximum: 255,
 	})
 	title: string;
 
 	@IsDate()
-	@ApiProperty({
-		description: "The start date of the event",
-		example: "2021-01-01T00:00:00.000Z",
-		required: false,
-	})
+	@IsNotEmpty()
+	@ApiProperty()
 	start_date: Date;
 
 	@IsDate()
-	@ApiProperty({
-		description: "The end date of the event",
-		example: "2021-01-01T00:00:00.000Z",
-		required: false,
-	})
+	@IsNotEmpty()
+	@ApiProperty()
 	end_date: Date;
 
-	@IsString()
+	@IsNumber()
+	@IsNotEmpty()
 	@ApiProperty({
-		description: "The description of the event",
-		example: "Event Description",
-		required: false,
+		example: 33.8475,
 	})
-	location: string;
+	latitude: number;
+
+	@IsNumber()
+	@IsNotEmpty()
+	@ApiProperty({
+		example: -170.5953,
+	})
+	longitude: number;
 
 	@IsString()
+	@IsOptional()
+	@Transform(({ value }) => value.trim())
 	@ApiProperty({
-		description: "The description of the event",
-		example: "Event Description",
+		example: "Muda Mudi April 2025",
 		required: false,
+		nullable: true,
 	})
-	description: string;
+	description: string | null;
 }

@@ -21,7 +21,7 @@ CREATE TYPE "Status" AS ENUM ('Hadir', 'Izin');
 
 -- CreateTable
 CREATE TABLE "Desa" (
-    "id" SERIAL NOT NULL,
+    "id" SMALLSERIAL NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "nama" VARCHAR(50) NOT NULL,
 
@@ -30,7 +30,7 @@ CREATE TABLE "Desa" (
 
 -- CreateTable
 CREATE TABLE "Kelompok" (
-    "id" VARCHAR(3) NOT NULL,
+    "id" CHAR(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "nama" VARCHAR(50) NOT NULL,
     "desa_id" INTEGER NOT NULL,
@@ -40,30 +40,30 @@ CREATE TABLE "Kelompok" (
 
 -- CreateTable
 CREATE TABLE "Generus" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "nama" VARCHAR(50) NOT NULL,
+    "nama" VARCHAR(255) NOT NULL,
     "jenis_kelamin" "JenisKelamin" NOT NULL,
-    "tempat_lahir" VARCHAR(32),
+    "tempat_lahir" VARCHAR(50) NOT NULL,
     "tanggal_lahir" DATE NOT NULL,
     "jenjang" "Jenjang" NOT NULL,
-    "nomer_whatsapp" VARCHAR(14),
+    "nomer_whatsapp" VARCHAR(15),
     "pendidikan_terakhir" "PendidikanTerakhir" NOT NULL,
-    "nama_orang_tua" VARCHAR(50),
-    "nomer_whatsapp_orang_tua" VARCHAR(14),
+    "nama_orang_tua" VARCHAR(255),
+    "nomer_whatsapp_orang_tua" VARCHAR(15),
     "sambung" "Sambung" NOT NULL DEFAULT 'Tidak Aktif',
     "alamat_tempat_tinggal" VARCHAR(255) NOT NULL,
     "keterangan" "Keterangan" NOT NULL,
     "alamat_asal" VARCHAR(255),
-    "kelompok_id" TEXT NOT NULL,
+    "kelompok_id" CHAR(3) NOT NULL,
 
     CONSTRAINT "Generus_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "username" VARCHAR(50) NOT NULL,
@@ -75,24 +75,25 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Log" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "event" TEXT NOT NULL,
+    "event" VARCHAR(255) NOT NULL,
     "description" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
 
     CONSTRAINT "Log_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Event" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "title" TEXT NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
-    "location" TEXT NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
     "description" TEXT,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
@@ -100,12 +101,11 @@ CREATE TABLE "Event" (
 
 -- CreateTable
 CREATE TABLE "Presence" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" "Status" NOT NULL,
-    "description" TEXT,
-    "event_id" TEXT NOT NULL,
-    "generus_id" TEXT NOT NULL,
+    "event_id" UUID NOT NULL,
+    "generus_id" UUID NOT NULL,
 
     CONSTRAINT "Presence_pkey" PRIMARY KEY ("id")
 );
@@ -114,16 +114,28 @@ CREATE TABLE "Presence" (
 CREATE UNIQUE INDEX "Desa_nama_key" ON "Desa"("nama");
 
 -- CreateIndex
+CREATE INDEX "Desa_nama_idx" ON "Desa"("nama");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Kelompok_nama_key" ON "Kelompok"("nama");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Generus_kelompok_id_key" ON "Generus"("kelompok_id");
+CREATE INDEX "Kelompok_nama_idx" ON "Kelompok"("nama");
+
+-- CreateIndex
+CREATE INDEX "Generus_nama_jenis_kelamin_jenjang_pendidikan_terakhir_samb_idx" ON "Generus"("nama", "jenis_kelamin", "jenjang", "pendidikan_terakhir", "sambung", "keterangan");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
+CREATE INDEX "User_username_idx" ON "User"("username");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Event_title_key" ON "Event"("title");
+
+-- CreateIndex
+CREATE INDEX "Event_title_idx" ON "Event"("title");
 
 -- AddForeignKey
 ALTER TABLE "Kelompok" ADD CONSTRAINT "Kelompok_desa_id_fkey" FOREIGN KEY ("desa_id") REFERENCES "Desa"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

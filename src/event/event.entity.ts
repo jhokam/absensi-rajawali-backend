@@ -6,6 +6,7 @@ export class EventEntity implements Event {
 	@ApiProperty({
 		example: "888099ce-4f95-471a-b07c-e7a3dd0aa772",
 		required: false,
+		uniqueItems: true,
 	})
 	id: string;
 
@@ -18,14 +19,21 @@ export class EventEntity implements Event {
 	@ApiProperty({ example: "muda-mudi November 2006" })
 	title: string;
 
-	@ApiProperty({ required: false })
+	@ApiProperty()
 	start_date: Date;
 
-	@ApiProperty({ required: false })
+	@ApiProperty()
 	end_date: Date;
 
-	@ApiProperty({ example: "Jakarta", required: false })
-	location: string;
+	@ApiProperty({
+		example: 100.0,
+	})
+	latitude: number;
+
+	@ApiProperty({
+		example: 100.0,
+	})
+	longitude: number;
 
 	@ApiProperty({ example: "muda-mudi", required: false })
 	description: string | null;

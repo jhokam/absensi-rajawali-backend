@@ -1,5 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import {
+	IsDate,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	MaxLength,
+} from "class-validator";
 import {
 	JenisKelamin,
 	Jenjang,
@@ -10,42 +18,60 @@ import {
 
 export class GenerusDto {
 	@IsString()
-	@ApiProperty({ example: "Abdul Aziz" })
+	@IsNotEmpty()
+	@MaxLength(255)
+	@Transform(({ value }) => value.trim())
+	@ApiProperty({ example: "Abdul Aziz", maxLength: 255 })
 	nama: string;
 
 	@IsEnum(JenisKelamin)
-	@ApiProperty({ example: "", enum: JenisKelamin })
+	@IsNotEmpty()
+	@ApiProperty({ example: "Laki_Laki", enum: JenisKelamin })
 	jenis_kelamin: JenisKelamin;
 
 	@IsString()
-	@IsOptional()
-	@ApiProperty({ example: "Jakarta" })
-	tempat_lahir: string | null;
+	@IsNotEmpty()
+	@MaxLength(50)
+	@Transform(({ value }) => value.trim())
+	@ApiProperty({ example: "Jakarta", maxLength: 50 })
+	tempat_lahir: string;
 
 	@IsDate()
-	@ApiProperty({})
+	@IsNotEmpty()
+	@ApiProperty()
 	tanggal_lahir: Date;
 
 	@IsEnum(Jenjang)
-	@ApiProperty({ example: "", enum: Jenjang })
+	@IsNotEmpty()
+	@ApiProperty({ example: "Paud", enum: Jenjang })
 	jenjang: Jenjang;
 
 	@IsString()
 	@IsOptional()
-	@ApiProperty({ example: "081234567890" })
+	@Transform(({ value }) => value.trim())
+	@ApiProperty({
+		example: "081234567890",
+		nullable: true,
+		maxLength: 15,
+		required: false,
+	})
 	nomer_whatsapp: string | null;
 
 	@IsEnum(PendidikanTerakhir)
-	@ApiProperty({ example: "", enum: PendidikanTerakhir })
+	@IsNotEmpty()
+	@ApiProperty({ example: "S2", enum: PendidikanTerakhir })
 	pendidikan_terakhir: PendidikanTerakhir;
 
 	@IsString()
 	@IsOptional()
-	@ApiProperty({ example: "Orang Tua Admin Rajawali" })
+	@MaxLength(255)
+	@Transform(({ value }) => value.trim())
+	@ApiProperty({ example: "", nullable: true, required: false, maxLength: 255 })
 	nama_orang_tua: string | null;
 
 	@IsString()
 	@IsOptional()
+	@Transform(({ value }) => value.trim())
 	@ApiProperty({ example: "081234567891" })
 	nomer_whatsapp_orang_tua: string | null;
 
@@ -54,6 +80,7 @@ export class GenerusDto {
 	sambung: Sambung;
 
 	@IsString()
+	@Transform(({ value }) => value.trim())
 	@ApiProperty({ example: "Jl. Admin Rajawali No. 1" })
 	alamat_tempat_tinggal: string;
 
@@ -63,6 +90,7 @@ export class GenerusDto {
 
 	@IsString()
 	@IsOptional()
+	@Transform(({ value }) => value.trim())
 	@ApiProperty({ example: "Jl. Admin Rajawali No. 2" })
 	alamat_asal: string | null;
 

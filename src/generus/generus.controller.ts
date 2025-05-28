@@ -30,7 +30,7 @@ import { RolesGuard } from "src/roles/roles.guard";
 import { Jenjang, Keterangan, PendidikanTerakhir } from "../generated/client";
 import { JenisKelamin } from "../generated/client/enums";
 import type { FilterGenerusDto } from "./dto/filter-generus.dto";
-import type { GenerusDto } from "./dto/generus.dto";
+import { GenerusDto } from "./dto/generus.dto";
 import type { GenerusEntity } from "./generus.entity";
 import { GenerusService } from "./generus.service";
 
@@ -436,7 +436,7 @@ export class GenerusController {
 		const data = await this.generusService.createGenerus(input);
 		return formatResponse(
 			true,
-			"Successfully created a new Generus",
+			`Berhasil menambahkan data Generus: ${input.nama}`,
 			data,
 			null,
 		);
